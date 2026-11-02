@@ -72,6 +72,35 @@ class VillageMapRenderer:
         "work": (90, 100, 110),
     }
 
+    # Trees placed around the map
+    tree_positions = {
+        (180, 300), (850, 250), (1200, 350),
+        (2700, 300), (3050, 450),
+        (180, 1800), (1100, 1850), (1350, 2050),
+        (2200, 1900), (3000, 2050),
+        (800, 2200), (1800, 2200), (2800, 2250),
+    }
+
+    # Street lamps along the sidewalks
+    lamp_positions = {
+        (250, 1072), (850, 1072), (1300, 1072),
+        (1850, 1072), (2450, 1072), (3000, 1072),
+        (200, 1264), (700, 1264), (1200, 1264),
+        (1850, 1264), (2400, 1264), (3000, 1264),
+        (1456, 300), (1456, 750),
+        (1648, 300), (1648, 750),
+        (1456, 1650), (1456, 2100),
+        (1648, 1650), (1648, 2100),
+    }
+
+    # Benches along the sidewalks
+    bench_positions = {
+        (550, 1072), (1100, 1072),
+        (2150, 1072), (2750, 1072),
+        (450, 1264), (1050, 1264),
+        (2150, 1264), (2750, 1264),
+    }
+
     def __init__(
         self,
         *,
@@ -154,8 +183,17 @@ class VillageMapRenderer:
                 pygame.draw.rect(surface, road_color, self._rect_to_screen(sidewalk.bounds))
                 self._draw_crosswalk_stripes(surface, sidewalk.bounds)
 
+        for tree in self.tree_positions:
+            self._draw_tree(surface, tree)
+
+        for bench in self.bench_positions:
+            self._draw_bench(surface, bench)
+
         for building in village_map.buildings:
             self._draw_building(surface, building, show_labels=show_labels)
+            
+        for lamp in self.lamp_positions:
+            self._draw_lamp(surface, lamp)
 
         spawn = self.world_to_screen(village_map.villager_spawn)
         pygame.draw.circle(surface, self.spawn_color, spawn, max(6, round(12 * self.zoom)))
@@ -324,6 +362,100 @@ class VillageMapRenderer:
                     break
             draw_segment(visible_start, dash_end)
             dash_start += dash_length + gap_length
+
+    def _draw_tree(self, surface, position):
+        x, y = self.world_to_screen(position)
+
+        size = max(4, round(45 * self.zoom))
+
+        # Shadow
+        pygame.draw.ellipse(
+            surface, (45, 75, 55),
+            (x - size, y + size // 2, size * 2, size // 2)
+        )
+
+        # Tree trunk
+        pygame.draw.rect(
+            surface, (105, 70, 42),
+            (x - size // 6, y, size // 3, size)
+        )
+
+        # Leaves
+        pygame.draw.circle(surface, (55, 115, 55), (x, y - size // 2), size)
+        pygame.draw.circle(surface, (75, 145, 60), (x - size // 2, y - size // 2), size // 2)
+        pygame.draw.circle(surface, (75, 145, 60), (x + size // 2, y - size // 2), size // 2)
+
+        # Small highlight
+        pygame.draw.circle(
+            surface, (105, 165, 65),
+            (x - size // 3, y - size),
+            max(2, size // 4)
+        )
+
+    def _draw_lamp(self, surface, position):
+        x, y = self.world_to_screen(position)
+
+        height = max(10, round(55 * self.zoom))
+        pole_width = max(1, round(3 * self.zoom))
+
+        # Pole
+        pygame.draw.line(
+            surface, (45, 45, 50),
+            (x, y), (x, y - height),
+            pole_width
+        )
+
+        # Top of the lamp
+        pygame.draw.line(
+            surface, (45, 45, 50),
+            (x, y - height), (x + round(8 * self.zoom), y - height),
+            pole_width
+        )
+
+        # Light
+        pygame.draw.circle(
+            surface, (255, 225, 120),
+            (x + round(8 * self.zoom), y - height),
+            max(2, round(5 * self.zoom))
+        )
+
+        # Dark outline around light
+        pygame.draw.circle(
+            surface, (65, 65, 60),
+            (x + round(8 * self.zoom), y - height),
+            max(2, round(5 * self.zoom)),
+            max(1, round(2 * self.zoom))
+        )
+
+    def _draw_bench(self, surface, position):
+        x, y = self.world_to_screen(position)
+
+        width = max(12, round(55 * self.zoom))
+        height = max(4, round(10 * self.zoom))
+
+        # Bench legs
+        pygame.draw.line(
+            surface, (55, 45, 40),
+            (x - width // 3, y), (x - width // 3, y + height),
+            2
+        )
+        pygame.draw.line(
+            surface, (55, 45, 40),
+            (x + width // 3, y), (x + width // 3, y + height),
+            2
+        )
+
+        # Seat
+        pygame.draw.rect(
+            surface, (135, 85, 48),
+            (x - width // 2, y - height, width, height)
+        )
+
+        pygame.draw.rect(
+            surface, (85, 55, 35),
+            (x - width // 2, y - height, width, height),
+            1
+        )
 
     def _draw_building(
         self,
