@@ -43,6 +43,7 @@ class VillagerContext:
     power_on: bool
     previous_action: Optional[str] = None
     extra: Dict[str, Any] = field(default_factory=dict)
+    parts_arrived: Optional[bool] = None
 
 
 # Reusable agent; role behavior comes from profile + context.
@@ -114,6 +115,16 @@ class VillagerAgent:
                 f"Crisis: power outage, day {ctx.crisis_day} of {ctx.crisis_duration}, affected area: {ctx.crisis_area}."
                 if ctx.crisis_active else "Crisis: none."
             )
+
+            # Status of replacement parts
+            string_addition = ""
+
+            if agent.role == "electrician" and ctx.parts_arrived is not None:
+                if ctx.parts_arrived:
+                    string_addition = "Replacement part arrived, go to the electrical plant and restore power.\n"
+                else:
+                    string_addition = "Waiting for a replacement part.\n"
+            
             user_lines.append(
                 f"--- VILLAGER {i} (ID: {v_id}) ---\n"
                 f"Name: {agent.name}\n"
@@ -123,6 +134,7 @@ class VillagerAgent:
                 f"Time: Day {ctx.day}, {ctx.phase}\n"
                 f"{crisis_line}\n"
                 f"Power: {'on' if ctx.power_on else 'off'}\n"
+                f"{string_addition}"
                 f"Previous action: {ctx.previous_action or 'none'}\n"
                 f"Permitted actions: {sorted(agent.profile.permitted_actions)}\n"
                 f"Valid locations: {sorted(VillageMap.locations)}\n"
@@ -195,6 +207,14 @@ class VillagerAgent:
             else "Crisis: none."
         )
 
+        string_addition = ""
+
+        if self.role == "electrician" and ctx.parts_arrived is not None:
+            if ctx.parts_arrived:
+                string_addition = "Replacement part arrived, go to the electrical plant and restore power.\n"
+            else:
+                string_addition = "Waiting for a replacement part.\n"
+
         user = (
             f"Villager: {self.name} (id={self.villager_id})\n"
             f"Role: {self.profile.role}\n"
@@ -203,6 +223,7 @@ class VillagerAgent:
             f"Time: Day {ctx.day}, {ctx.phase}\n"
             f"{crisis_line}\n"
             f"Power: {'on' if ctx.power_on else 'off'}\n"
+            f"{string_addition}"
             f"Previous action: {ctx.previous_action or 'none'}\n"
             f"Permitted actions: {sorted(self.profile.permitted_actions)}\n"
             f"Valid locations: {sorted(VillageMap.locations)}\n"

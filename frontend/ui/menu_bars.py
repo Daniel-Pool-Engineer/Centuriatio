@@ -72,7 +72,7 @@ class BottomMenuBar(FloatingMenuBar):
         )
         # called as on_disruption(name, is_active) when a disruption starts or ends
         self.on_disruption = on_disruption
-        # called as on_control("pause" | "speed" | "reset")
+        # called as on_control("freeze" | "speed" | "reset")
         self.on_control = on_control
         self.active_disruption: str | None = None
         self.status_text = ""
@@ -86,13 +86,13 @@ class BottomMenuBar(FloatingMenuBar):
         ]
 
         # simulation controls
-        self.pause_button = Button("Pause", on_click=lambda: self._control("pause"))
+        self.freeze_button = Button("Freeze", on_click=lambda: self._control("freeze"))
         self.speed_button = Button("Speed 1x", on_click=lambda: self._control("speed"))
         self.reset_button = Button("Reset", on_click=lambda: self._control("reset"))
 
         self.buttons = [
             *self.disruption_buttons,
-            self.pause_button,
+            self.freeze_button,
             self.speed_button,
             self.reset_button,
         ]
@@ -120,7 +120,7 @@ class BottomMenuBar(FloatingMenuBar):
 
     def set_control_state(self, paused: bool, speed: int) -> None:
         # update the control button labels to match the clock
-        self.pause_button.label = "Resume" if paused else "Pause"
+        self.freeze_button.label = "Unfreeze" if paused else "Freeze"
         self.speed_button.label = f"Speed {speed}x"
 
     def set_status(self, text: str) -> None:

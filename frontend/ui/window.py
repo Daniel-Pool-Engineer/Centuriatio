@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from enum import Enum, auto
 from math import hypot
+from pathlib import Path
 
 import pygame
 
@@ -10,12 +12,26 @@ from backend.simulation_state import WorldState
 from backend.simulation_loop import BackendSimulation
 
 # frontend imports
+from frontend.ui.app_menu import MenuPanel
 from frontend.ui.menu_bars import BottomMenuBar, RightMenuBar
 from frontend.village.map import create_test_map
 from frontend.village.renderer import VillageMapRenderer
 from frontend.village.villagers import Villager, VillagerManager
 
 pygame.init()
+
+
+class AppState(Enum):
+    MAIN_MENU = auto()
+    RUNNING = auto()
+
+
+class OverlayState(Enum):
+    NONE = auto()
+    SETTINGS = auto()
+    PAUSE_MENU = auto()
+    CONFIRM_EXIT = auto()
+
 
 # The LLM needs the keys in .env; without them villagers use their fallback actions.
 try:
@@ -31,11 +47,13 @@ VILLAGER_DECISION_COOLDOWN = 5.0
 
 world_state = WorldState()
 backend_sim = BackendSimulation(world_state, llm_client)
-backend_sim.start()
+backend_started = False
 
 village_map = create_test_map()
 
 screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
+icon_path = Path(__file__).resolve().parent.parent / "assets" / "Icon.png"
+pygame.display.set_icon(pygame.image.load(icon_path).convert_alpha())
 pygame.display.set_caption("Centuriatio")
 
 renderer = VillageMapRenderer()
@@ -47,6 +65,13 @@ last_mouse_position: tuple[int, int] | None = None
 MAX_ZOOM = 1.0
 ZOOM_STEP = 1.1
 info_font = pygame.font.Font(None, 20)
+app_state = AppState.MAIN_MENU
+overlay_state = OverlayState.NONE
+settings_return_overlay = OverlayState.NONE
+confirm_return_overlay = OverlayState.PAUSE_MENU
+app_running = True
+show_grid = True
+show_labels = True
 
 # the disruption currently injected into the village (None = normal day)
 active_disruption: str | None = None
@@ -130,10 +155,9 @@ def reset_simulation() -> None:
 
 
 def handle_control(name: str) -> None:
-    # called by the Pause / Speed / Reset buttons
-    if name == "pause":
+    # called by the Freeze / Speed / Reset buttons
+    if name == "freeze":
         sim_clock.control_pause()
-        log("Simulation paused" if sim_clock.paused else "Simulation resumed")
     elif name == "speed":
         sim_clock.speedup(2 if sim_clock.speed == 1 else 1)
     elif name == "reset":
@@ -142,6 +166,89 @@ def handle_control(name: str) -> None:
 
 
 bottom_menu = BottomMenuBar(on_disruption=handle_disruption, on_control=handle_control)
+
+
+def start_simulation() -> None:
+    global app_state, backend_started
+    if not backend_started:
+        # Keep the worker idle until the user actually starts the simulation.
+        backend_sim.start()
+        backend_started = True
+    reset_simulation()
+    app_state = AppState.RUNNING
+
+
+def toggle_pause() -> None:
+    global overlay_state
+    if not sim_clock.paused:
+        sim_clock.paused = True
+    else:
+        sim_clock.paused = False
+        overlay_state = OverlayState.NONE
+    bottom_menu.set_control_state(sim_clock.paused, sim_clock.speed)
+
+
+def open_settings() -> None:
+    global overlay_state, settings_return_overlay
+    settings_return_overlay = overlay_state
+    overlay_state = OverlayState.SETTINGS
+
+
+def return_from_settings() -> None:
+    global overlay_state
+    overlay_state = settings_return_overlay
+
+
+def request_exit() -> None:
+    global overlay_state, confirm_return_overlay
+    confirm_return_overlay = overlay_state
+    overlay_state = OverlayState.CONFIRM_EXIT
+
+
+def cancel_exit() -> None:
+    global overlay_state
+    overlay_state = confirm_return_overlay
+
+
+def quit_application() -> None:
+    global app_running
+    app_running = False
+
+
+def toggle_grid() -> None:
+    global show_grid
+    show_grid = not show_grid
+    settings_menu.buttons[0].label = f"Show Grid: {'On' if show_grid else 'Off'}"
+
+
+def toggle_labels() -> None:
+    global show_labels
+    show_labels = not show_labels
+    settings_menu.buttons[1].label = f"Building Labels: {'On' if show_labels else 'Off'}"
+
+
+main_menu = MenuPanel(
+    "Centuriatio",
+    [("Start Simulation", start_simulation), ("Settings", open_settings), ("Quit", quit_application)],
+    "A village simulation",
+)
+pause_menu = MenuPanel(
+    "Paused",
+    [("Resume", toggle_pause), ("Settings", open_settings), ("End Simulation", request_exit)],
+)
+settings_menu = MenuPanel(
+    "Settings",
+    [
+        (f"Show Grid: {'On' if show_grid else 'Off'}", toggle_grid),
+        (f"Building Labels: {'On' if show_labels else 'Off'}", toggle_labels),
+        ("Back", return_from_settings),
+    ],
+)
+exit_menu = MenuPanel(
+    "End Simulation?",
+    [("End Simulation", quit_application), ("Cancel", cancel_exit)],
+    "The current simulation will end.",
+)
 
 
 def resize_menus() -> None:
@@ -371,22 +478,55 @@ def draw_villager_info(villager: VillagerPresentation) -> None:
 
 resize_menus()
 center_camera()
-log_period()
-log("Simulation started")
 
-while True:
+while app_running:
     # real seconds since the last frame (also caps the game at 60 FPS)
     dt = clock.tick(60) / 1000
 
     # Process player inputs.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            raise SystemExit
+            app_running = False
+            break
         if event.type == pygame.VIDEORESIZE:
             screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
             resize_menus()
             clamp_camera()
+            continue
+
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            if app_state == AppState.MAIN_MENU:
+                if overlay_state == OverlayState.SETTINGS:
+                    return_from_settings()
+            elif overlay_state == OverlayState.NONE:
+                sim_clock.paused = True
+                bottom_menu.set_control_state(sim_clock.paused, sim_clock.speed)
+                overlay_state = OverlayState.PAUSE_MENU
+            elif overlay_state == OverlayState.PAUSE_MENU:
+                toggle_pause()
+            elif overlay_state == OverlayState.SETTINGS:
+                return_from_settings()
+            elif overlay_state == OverlayState.CONFIRM_EXIT:
+                cancel_exit()
+            continue
+
+        if app_state == AppState.MAIN_MENU:
+            if overlay_state == OverlayState.SETTINGS:
+                settings_menu.handle_event(event)
+            else:
+                main_menu.handle_event(event)
+            continue
+
+        if overlay_state == OverlayState.SETTINGS:
+            settings_menu.handle_event(event)
+            continue
+        if overlay_state == OverlayState.PAUSE_MENU:
+            pause_menu.handle_event(event)
+            continue
+        if overlay_state == OverlayState.CONFIRM_EXIT:
+            exit_menu.handle_event(event)
+            continue
+
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
             clicked_villager = villager_at(event.pos)
             selected_villager_id = (
@@ -425,52 +565,73 @@ while True:
         right_menu.handle_event(event)
 
     # Do logical updates here.
-    # advance the day/night clock (it handles pause and speed itself)
-    for phase, _day in sim_clock.update(dt):
-        villagers.set_night(phase == "Night")
-        for villager in villagers.villagers:
-            if villager.agent is not None:
-                villager.decision_cooldown = 0.0
-        log_period()
-        log("Night falls, villagers head home" if phase == "Night" else "Morning, villagers start their day")
+    if app_state == AppState.RUNNING and not sim_clock.paused:
+        # Advance the clock and villagers only while the simulation is active.
+        for phase, _day in sim_clock.update(dt):
+            villagers.set_night(phase == "Night")
+            for villager in villagers.villagers:
+                if villager.agent is not None:
+                    villager.decision_cooldown = 0.0
+            log_period()
+            log("Night falls, villagers head home" if phase == "Night" else "Morning, villagers start their day")
 
-    # everything moves faster at 2x and stops when paused
-    sim_dt = 0 if sim_clock.paused else dt * sim_clock.speed
-    for message in villagers.update(sim_dt):
-        log(message)
-    update_agents(sim_dt)
+        sim_dt = dt * sim_clock.speed
+        for message in villagers.update(sim_dt):
+            log(message)
+        update_agents(sim_dt)
 
     status = f"{period_label()}  ·  {sim_clock.get_time()}"
-    if sim_clock.paused:
+    if sim_clock.paused and overlay_state == OverlayState.NONE:
+        status += "  ·  Frozen"
+    elif sim_clock.paused:
         status += "  ·  Paused"
     bottom_menu.set_status(status)
 
     # Render the graphics here.
-    renderer.draw(
-        screen,
-        village_map,
-        show_grid=True,
-        show_labels=True,
-    )
-    if sim_clock.day_night == "Night":
-        draw_overlay(90)
-    if active_disruption == "Power Outage":
-        draw_overlay(140)
-    villagers.draw(screen, renderer)
-    villager_views = villager_presentations()
-    hovered_villager = villager_at(pygame.mouse.get_pos(), villager_views)
-    selected_villager = next(
-        (
-            villager
-            for villager in villager_views
-            if villager.villager_id == selected_villager_id
-        ),
-        None,
-    )
-    info_villager = selected_villager or hovered_villager
-    if info_villager is not None:
-        draw_villager_info(info_villager)
-    right_menu.draw(screen)
-    bottom_menu.draw(screen)
+    if app_state == AppState.RUNNING:
+        renderer.draw(
+            screen,
+            village_map,
+            show_grid=show_grid,
+            show_labels=show_labels,
+        )
+        if sim_clock.day_night == "Night":
+            draw_overlay(90)
+        if active_disruption == "Power Outage":
+            draw_overlay(140)
+        villagers.draw(screen, renderer)
+        villager_views = villager_presentations()
+        hovered_villager = villager_at(pygame.mouse.get_pos(), villager_views)
+        selected_villager = next(
+            (
+                villager
+                for villager in villager_views
+                if villager.villager_id == selected_villager_id
+            ),
+            None,
+        )
+        info_villager = selected_villager or hovered_villager
+        if info_villager is not None:
+            draw_villager_info(info_villager)
+        right_menu.draw(screen)
+        bottom_menu.draw(screen)
+
+        if overlay_state != OverlayState.NONE:
+            draw_overlay(150)
+
+        if overlay_state == OverlayState.PAUSE_MENU:
+            pause_menu.draw(screen)
+        elif overlay_state == OverlayState.SETTINGS:
+            settings_menu.draw(screen)
+        elif overlay_state == OverlayState.CONFIRM_EXIT:
+            exit_menu.draw(screen)
+    else:
+        screen.fill((20, 24, 34))
+        if overlay_state == OverlayState.SETTINGS:
+            settings_menu.draw(screen)
+        else:
+            main_menu.draw(screen)
 
     pygame.display.flip()  # Refresh on-screen display
+
+pygame.quit()
