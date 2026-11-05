@@ -110,7 +110,7 @@ class VillagerManager:
                 v.in_truck = True
                 v.location_id = target_id
                 v.destination_id = target_id
-         python -m frontend.ui.window       v.waypoints.clear()
+                v.waypoints.clear()
                 v.position = self.fire_truck.position
                 self.fire_truck.passengers.append(v)
 

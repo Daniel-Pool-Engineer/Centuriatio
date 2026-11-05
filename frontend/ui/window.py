@@ -7,8 +7,7 @@ import pygame
 
 # backend imports
 from backend.agent.daynight import Clock
-from backend.agent.agent import VillagerContext
-from backend.simulation_state import WorldState
+from backend.simulation_state import WorldState, Villager
 from backend.simulation_loop import BackendSimulation
 
 # frontend imports
@@ -16,7 +15,8 @@ from frontend.ui.app_menu import MenuPanel
 from frontend.ui.menu_bars import BottomMenuBar, RightMenuBar
 from frontend.village.map import create_test_map
 from frontend.village.renderer import VillageMapRenderer
-from frontend.village.villagers import Villager, VillagerManager
+from backend.simulation_manager import VillagerManager
+from frontend.ui.villager_renderer import VillagerRenderer
 
 pygame.init()
 
@@ -43,7 +43,6 @@ except Exception as exc:
 
 OUTAGE_DURATION_DAYS = 3        # fixed for now, a duration selector can replace this later
 OUTAGE_AREA = "whole village"
-VILLAGER_DECISION_COOLDOWN = 5.0
 
 world_state = WorldState()
 backend_sim = BackendSimulation(world_state, llm_client)
@@ -78,8 +77,8 @@ active_disruption: str | None = None
 outage_start_day = 1  # in-game day the outage started on
 
 right_menu = RightMenuBar()
-villagers = VillagerManager(village_map, llm_client=llm_client)
-
+villagers: VillagerManager | None = None
+villager_renderer = VillagerRenderer()
 selected_villager_id: str | None = None
 
 
@@ -120,6 +119,9 @@ def log_period() -> None:
 def handle_disruption(name: str, is_active: bool) -> None:
     # called by the X-Factor menu when a disruption starts or ends
     global active_disruption, outage_start_day
+    if villagers is None:
+        return
+    
     if is_active:
         active_disruption = name
         outage_start_day = sim_clock.day_number
@@ -145,6 +147,7 @@ def reset_simulation() -> None:
     # start everything over from Normal Day 1
     global villagers, active_disruption, selected_villager_id
     sim_clock.reset()
+    backend_sim.reset()
     villagers = VillagerManager(village_map, llm_client=llm_client)
     selected_villager_id = None
     active_disruption = None
@@ -333,87 +336,8 @@ def draw_overlay(alpha: int) -> None:
     screen.blit(_overlay_surface, (0, 0))
 
 
-def update_agents(sim_dt: float) -> None:
-    for villager in villagers.villagers:
-        villager.decision_cooldown = max(0.0, villager.decision_cooldown - sim_dt)
-
-    # Process results from the backend AI, the output of the batch system
-    with world_state.lock:
-        if world_state.is_data_ready:
-            for v_id, action in world_state.new_actions.items():
-                villager = villagers.get_villager(v_id)
-                if villager is None:
-                    continue
-
-                print(f"{villager.name}: {action.action} -> {action.target_location}")
-                if action.journal:
-                    log(f"{villager.name}: {action.journal}")
-
-                villager.previous_action = action.action
-                villager.current_task = action.action.replace("_", " ").title()
-                if action.target_location:
-                    destination = action.target_location.replace("_", " ").title()
-                    villager.current_task = f"{villager.current_task} - {destination}"
-
-                if action.target_location and action.target_location != villager.location_id:
-                    try:
-                        villagers.send_to(villager, action.target_location)
-                        villager.wait_time = 999.0
-                    except (ValueError, KeyError) as exc:
-                        print(f"  route failed for {villager.name}: {exc}")
-                        villager.wait_time = 5.0
-                elif (
-                    villager.agent is not None
-                    and villager.agent.profile.role == "first_responder"
-                    and villager.location_id != "school"
-                ):
-                    choices = [b for b in villagers.buildings if b != villager.location_id]
-                    next_patrol = villagers.rng.choice(choices)
-                    try:
-                        villagers.send_to(villager, next_patrol)
-                        villager.wait_time = 999.0
-                    except (ValueError, KeyError) as exc:
-                        print(f"  route failed for {villager.name}: {exc}")
-                        villager.wait_time = 5.0
-                else:
-                    villager.wait_time = 5.0
-            
-            world_state.is_data_ready = False
-            world_state.new_actions.clear()
-
-    if sim_clock.paused:
-        return
-
-    for villager in villagers.villagers:
-        if villager.is_scripted or villager.agent is None:
-            continue
-        if (
-            not villager.is_walking
-            and villager.wait_time <= 0
-            and villager.decision_cooldown <= 0
-        ):
-            if not backend_sim.is_queued(villager.agent_id):
-                outage = active_disruption == "Power Outage"
-                ctx = VillagerContext(
-                    villager_id=villager.agent_id, 
-                    name=villager.name, 
-                    location_id=villager.location_id or "unknown",
-                    day=sim_clock.day_number, 
-                    phase=sim_clock.day_night.lower(),
-                    crisis_active=outage, 
-                    crisis_day=outage_day() if outage else 0,
-                    crisis_duration=OUTAGE_DURATION_DAYS if outage else 0,
-                    crisis_area=OUTAGE_AREA if outage else None,
-                    power_on=not outage, 
-                    previous_action=villager.previous_action,
-                )
-                # Send them to the backend queue
-                backend_sim.queue_agent(villager.agent_id, villager.agent, ctx)
-                villager.wait_time = 999.0
-                villager.decision_cooldown = VILLAGER_DECISION_COOLDOWN
-
-
 def villager_presentations() -> list[VillagerPresentation]:
+    assert villagers is not None
     presentations = []
     for villager in villagers.villagers:
         role = "NPC" if villager.agent is None else villager.agent.profile.role
@@ -565,7 +489,7 @@ while app_running:
         right_menu.handle_event(event)
 
     # Do logical updates here.
-    if app_state == AppState.RUNNING and not sim_clock.paused:
+    if app_state == AppState.RUNNING and not sim_clock.paused and villagers is not None:
         # Advance the clock and villagers only while the simulation is active.
         for phase, _day in sim_clock.update(dt):
             villagers.set_night(phase == "Night")
@@ -576,9 +500,27 @@ while app_running:
             log("Night falls, villagers head home" if phase == "Night" else "Morning, villagers start their day")
 
         sim_dt = dt * sim_clock.speed
+        
+        # Move the villagers & fire truck
         for message in villagers.update(sim_dt):
             log(message)
-        update_agents(sim_dt)
+            
+        # Process AI decisions
+        outage = active_disruption == "Power Outage"
+        agent_messages = villagers.update_agents(
+            sim_dt=sim_dt,
+            world_state=world_state,
+            backend_sim=backend_sim,
+            clock=sim_clock,
+            is_power_outage=outage,
+            outage_day=outage_day() if outage else 0,
+            outage_duration=OUTAGE_DURATION_DAYS if outage else 0,
+            outage_area=OUTAGE_AREA if outage else "",
+        )
+        
+        # Log any messages generated by the AI
+        for msg in agent_messages:
+            log(msg)
 
     status = f"{period_label()}  ·  {sim_clock.get_time()}"
     if sim_clock.paused and overlay_state == OverlayState.NONE:
@@ -589,6 +531,7 @@ while app_running:
 
     # Render the graphics here.
     if app_state == AppState.RUNNING:
+        assert villagers is not None
         renderer.draw(
             screen,
             village_map,
@@ -599,7 +542,7 @@ while app_running:
             draw_overlay(90)
         if active_disruption == "Power Outage":
             draw_overlay(140)
-        villagers.draw(screen, renderer)
+        villager_renderer.draw(screen, renderer, villagers.villagers, villagers.fire_truck)
         villager_views = villager_presentations()
         hovered_villager = villager_at(pygame.mouse.get_pos(), villager_views)
         selected_villager = next(
@@ -633,5 +576,5 @@ while app_running:
             main_menu.draw(screen)
 
     pygame.display.flip()  # Refresh on-screen display
-
+backend_sim.shutdown()
 pygame.quit()

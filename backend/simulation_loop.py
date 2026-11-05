@@ -18,11 +18,23 @@ class BackendSimulation:
         self.last_flush_time = time.time()
         self.FLUSH_INTERVAL = 0.0
 
+    def reset(self) -> None:
+        # Clear previous runs.
+        self.pending_requests.clear()
+        self.active_futures.clear()
+        with self.state.lock:
+            self.state.new_actions.clear()
+            self.state.is_data_ready = False
+    
     def start(self):
         # Reference: https://www.geeksforgeeks.org/python/regular-threads-vs-daemon-threads-in-python/
         """ Single daemon thread that pumps the queue and gets results """
         self.thread = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
+
+    def shutdown(self) -> None:
+        self.running = False
+        self.executor.shutdown(wait = False, cancel_futures = True)
 
     def queue_agent(self, villager_id, agent, context):
         """ Called from the main thread; the worker thread picks it up """
