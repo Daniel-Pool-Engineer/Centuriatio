@@ -18,9 +18,9 @@ CITIZEN = RoleProfile(
     speed=1.0,
 )
 
-FIREFIGHTER = RoleProfile(
+FIRST_RESPONDER = RoleProfile(
     role="first_responder",
-    workplace="police",
+    workplace="fire",
     permitted_actions={
         "work", "shop", "patrol", "assist_residents", "check_for_help_needed", 
         "return_home", "stay", "travel"
