@@ -38,6 +38,7 @@ class Villager:
     position: Vec #current world-space (x,y)
     sidewalk_id: str # sidewalk the villager is currently on or last on
     location_id: str | None   # building they are at, None while walking
+    agent: VillagerAgent | None
     destination_id: str | None = None
     waypoints: list[tuple[Vec, str]] = field(default_factory=list)
 
@@ -47,7 +48,6 @@ class Villager:
     decision_cooldown: float = 0.0
 
     # AI decisions
-    agent: VillagerAgent | None
     previous_action: str | None = None
     current_task: str = "Waiting"
 
