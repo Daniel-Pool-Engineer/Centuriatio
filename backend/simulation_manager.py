@@ -29,6 +29,9 @@ class VillagerManager:
         self.llm_client = llm_client
         self.power_outage = False #while True, routine sleeping/waking is suppressed
         self.is_night = False
+
+        # Recovery phase
+        self.restore_requested = False
       
         # Initialize Fire Truck at the fire station
         fire_entrance = self.buildings["fire"].entrance
@@ -209,7 +212,8 @@ class VillagerManager:
         is_power_outage: bool,
         outage_day: int,
         outage_duration: int,
-        outage_area: str
+        outage_area: str,
+        recovery: Any = None
     ) -> list[str]:
         """Process AI results from the backend and queue new requests."""
         messages = []
@@ -229,6 +233,14 @@ class VillagerManager:
                         messages.append(f"{villager.name}: {action.journal}")
 
                     villager.previous_action = action.action
+
+                    if action.action == "restore_power" and recovery is not None and is_power_outage:
+                        if recovery.restore_possible(villager.location_id or ""):
+                            self.restore_requested = True
+                            messages.append(f"{villager.name} restored power")
+                        else:
+                            messages.append(f"{villager.name} is not able to restore power right now")
+
                     villager.current_task = action.action.replace("_", " ").title()
                     if action.target_location:
                         destination = action.target_location.replace("_", " ").title()
@@ -290,6 +302,7 @@ class VillagerManager:
                         crisis_area=outage_area if is_power_outage else None,
                         power_on=not is_power_outage, 
                         previous_action=villager.previous_action,
+                        parts_arrived=recovery.parts_arrived if recovery is not None and is_power_outage else None
                     )
                     backend_sim.queue_agent(villager.agent_id, villager.agent, ctx)
                     villager.wait_time = 999.0
