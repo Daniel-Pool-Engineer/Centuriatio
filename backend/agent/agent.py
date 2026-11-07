@@ -252,3 +252,20 @@ class VillagerAgent:
             target_location=data.get("target_location") or None,
             journal=str(data.get("journal", "")).strip(),
         )
+
+def building_convo(speaker, listener, history: list[dict], day: int, phase: str, location: str) -> str:
+    history_text = "\n".join([f"{h["name"]}: {h["line"]}" for h in history])
+    
+    if not history_text:
+        "(You are initiating the conversation)"
+
+    return f"""You are {speaker.name} ({speaker.agent.profile.role}).
+    You are at {location}. It is Day {day}, {phase}.
+    You are talking to {listener.name} ({listener.agent.profile.role if listener.agent else 'NPC'}).
+
+    Dialogue so far:
+    {history_text}
+
+    Write your next spoken line. Keep it to 1-2 short sentences. Spoken words only, no stage directions. 
+    If you want to end the conversation and wlak away, set "walk_away" to true.
+    Otherwise, output JSON: {"line": "Your spoken words", "walk_away": false}"""
