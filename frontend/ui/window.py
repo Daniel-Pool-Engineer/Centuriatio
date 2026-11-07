@@ -7,6 +7,7 @@ import pygame
 
 # backend imports
 from backend.agent.daynight import Clock
+from backend.agent.recovery_phase import RecoveryPhase  # recovery: tracks the replacement part and repair
 from backend.simulation_state import WorldState, Villager
 from backend.simulation_loop import BackendSimulation
 
@@ -41,7 +42,7 @@ except Exception as exc:
     print(f"LLM not available; villagers will use fallback actions: {exc}")
     llm_client = None
 
-OUTAGE_DURATION_DAYS = 3        # fixed for now, a duration selector can replace this later
+OUTAGE_DURATION_DAYS = 3      
 OUTAGE_AREA = "whole village"
 
 world_state = WorldState()
@@ -76,6 +77,11 @@ show_labels = True
 active_disruption: str | None = None
 outage_start_day = 1  # in-game day the outage started on
 
+# recovery: repair progress for the current outage (None when there is no outage)
+recovery: RecoveryPhase | None = None
+# recovery: True for the rest of the day/night after power comes back
+in_recovery = False
+
 right_menu = RightMenuBar()
 villagers: VillagerManager | None = None
 villager_renderer = VillagerRenderer()
@@ -103,6 +109,9 @@ def period_label() -> str:
     # e.g. "Normal Day 1" or "Outage Night 2"
     if active_disruption == "Power Outage":
         return f"Outage {sim_clock.day_night} {outage_day()}"
+    # recovery: label the time right after power comes back
+    if in_recovery:
+        return f"Recovery {sim_clock.day_night} {sim_clock.day_number}"
     return f"Normal {sim_clock.day_night} {sim_clock.day_number}"
 
 
@@ -118,21 +127,33 @@ def log_period() -> None:
 
 def handle_disruption(name: str, is_active: bool) -> None:
     # called by the X-Factor menu when a disruption starts or ends
-    global active_disruption, outage_start_day
+    global active_disruption, outage_start_day, recovery, in_recovery
     if villagers is None:
         return
     
     if is_active:
         active_disruption = name
         outage_start_day = sim_clock.day_number
+        in_recovery = False  # recovery: a new outage cancels any old recovery period
         log_period()
         log(f"X-Factor injected: {name}")
     else:
         log(f"{name} has ended")
         active_disruption = None
+        in_recovery = True  # recovery: the village recovers until the next morning
         log_period()
 
     if name == "Power Outage":
+        if is_active:
+            # recovery: order the replacement part as soon as the outage starts
+            recovery = RecoveryPhase()
+            recovery.start_recovery(sim_clock.day_number, OUTAGE_DURATION_DAYS)
+            log(f"Replacement part ordered, arrives on outage day {OUTAGE_DURATION_DAYS}")
+        else:
+            # recovery: repair is finished, clear it for next time
+            recovery = None
+            villagers.restore_requested = False
+
         # Villagers log their own departure individually
         for message in villagers.set_power_outage(is_active):
             log(message)
@@ -143,14 +164,37 @@ def handle_disruption(name: str, is_active: bool) -> None:
             log("Power restored, villagers go back to their routine")
 
 
+def update_recovery() -> None:
+    # recovery: check for the part, and end the outage once power is restored
+    if recovery is None or villagers is None or active_disruption != "Power Outage":
+        return
+
+    # recovery: the part arrives on the last day of the outage
+    if recovery.check_for_parts(sim_clock.day_number):
+        log("Replacement part arrived, the electrician can restore power")
+        for villager in villagers.villagers:
+            if villager.agent is not None and villager.agent.profile.role == "electrician":
+                villager.decision_cooldown = 0.0  # let the electrician react right away
+
+    # recovery: the electrician fixed it, or the deadline passed and power returns on its own
+    if villagers.restore_requested:
+        log("The electrician repaired the electrical plant")
+        bottom_menu.toggle_disruption("Power Outage")  # ends the outage and unpresses the button
+    elif recovery.force(sim_clock.day_number):
+        log("Repair deadline passed, power restored automatically")
+        bottom_menu.toggle_disruption("Power Outage")
+
+
 def reset_simulation() -> None:
     # start everything over from Normal Day 1
-    global villagers, active_disruption, selected_villager_id
+    global villagers, active_disruption, selected_villager_id, recovery, in_recovery
     sim_clock.reset()
     backend_sim.reset()
     villagers = VillagerManager(village_map, llm_client=llm_client)
     selected_villager_id = None
     active_disruption = None
+    recovery = None       # recovery: no repair in progress after a reset
+    in_recovery = False
     bottom_menu.clear_disruption()
     right_menu.clear()
     log_period()
@@ -496,8 +540,14 @@ while app_running:
             for villager in villagers.villagers:
                 if villager.agent is not None:
                     villager.decision_cooldown = 0.0
+            # recovery: the next morning after power returns, life is back to normal
+            finished_recovery = in_recovery and phase == "Day"
+            if finished_recovery:
+                in_recovery = False
             log_period()
             log("Night falls, villagers head home" if phase == "Night" else "Morning, villagers start their day")
+            if finished_recovery:
+                log("Recovery complete, routines are back to normal")
 
         sim_dt = dt * sim_clock.speed
         
@@ -516,13 +566,20 @@ while app_running:
             outage_day=outage_day() if outage else 0,
             outage_duration=OUTAGE_DURATION_DAYS if outage else 0,
             outage_area=OUTAGE_AREA if outage else "",
+            recovery=recovery,  # recovery: lets the electrician know if the part arrived
         )
         
         # Log any messages generated by the AI
         for msg in agent_messages:
             log(msg)
 
+        # recovery: check the part and whether power has been restored
+        update_recovery()
+
     status = f"{period_label()}  ·  {sim_clock.get_time()}"
+    # recovery: show the repair progress during an outage
+    if recovery is not None and active_disruption == "Power Outage":
+        status += "  ·  Part arrived" if recovery.parts_arrived else "  ·  Waiting for part"
     if sim_clock.paused and overlay_state == OverlayState.NONE:
         status += "  ·  Frozen"
     elif sim_clock.paused:
