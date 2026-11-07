@@ -269,3 +269,26 @@ def building_convo(speaker, listener, history: list[dict], day: int, phase: str,
     Write your next spoken line. Keep it to 1-2 short sentences. Spoken words only, no stage directions. 
     If you want to end the conversation and wlak away, set "walk_away" to true.
     Otherwise, output JSON: {"line": "Your spoken words", "walk_away": false}"""
+
+def building_reflection_prompt(villager) -> str:
+    if not villager.recent_encounters:
+        return f"""You are {villager.name} ({villager.agent.profile.role}). 
+        You just finished a simulation. You spent the entire time alone.
+        Write exactly 2 sentences:
+        1. How the silence felt.
+        2. What you noticed about yourself without others around.
+        Do not write a report. Do not use the word "journey".
+        Output JSON: {"reflection": "...", "lessons": ["..."]}"""
+
+    memories = "\n".join([f"- Day {m.day}, {m.phase} at {m.location}: {m.summary}" for m in villager.recent_encounters])
+
+    return f""" You are {villager.name} ({villager.agent.profile.role}). You just finished a simulation. Here is what actually happened to you:
+    {memories}
+
+    Write exactly 2 sentences:
+    1. What you felt at most memorable moment. Name a specific person and place. 
+    2. One thing you now understand about yourself or the village. 
+    Then, provide 1-2 actionable "lessons" for next time (e.g., "Next time, I will go to the school earlier").
+    Do not write a report. Do not use the word "journey".
+    Output JSON: {"reflection": "...", "lessons": ["...", "..."]}
+    """
