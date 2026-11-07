@@ -5,14 +5,24 @@ from typing import Dict, Any, List, Optional
 
 Color = tuple[int, int, int]
 Vec = tuple[float, float]
-@dataclass
 
+@dataclass
 class WorldState:
     is_data_ready: bool = False
     new_actions: Dict[str, Any] = field(default_factory=dict)
     
     # Thread lock to prevent race conditions
     lock: threading.Lock = field(default_factory=threading.Lock)
+
+
+@dataclass
+class MemoryEntry:
+    day: int
+    phase: str
+    location: str
+    with_ids: list[str]
+    summary: str
+    outcome: str = "normal"
 
 
 @dataclass
@@ -58,6 +68,11 @@ class Villager:
     # Ben only - fire fighter agent
     in_truck: bool = False
 
+    # Agent communication
+    recent_encounters: list[MemoryEntry] = field(default_factory=list)
+    converstion_partners: "Villager | None" = None
+    last_spoke_phase: dict[str, str] = field(default_factory = dict)
+    
     @property
     def is_walking(self) -> bool:
         return bool(self.waypoints) or self.in_truck
