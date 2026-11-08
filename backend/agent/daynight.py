@@ -64,4 +64,4 @@ class Clock:
         hours = minutes // 60
         left_over_min = minutes % 60
         
-        return f"{hours}:{left_over_min:02d}"
+        return f"{hours:02d}:{left_over_min:02d}"
