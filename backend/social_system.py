@@ -4,7 +4,7 @@ import time
 import traceback
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-from backend.agent.agent import building_convo, building_reflection_prompt
+from backend.agent.agent import building_convo, reflection_symbl
 from backend.simulation_state import MemoryEntry, Villager
 
 class SocialSystem:
@@ -126,7 +126,7 @@ class SocialSystem:
                     # Update the UI progress list
                     self.export_progress.append((v.name, "..."))
                     
-                    prompt = building_reflection_prompt(v)
+                    prompt = reflection_symbl(v)
                     try:
                         raw = v.agent._call_llm([{"role": "user", "content": prompt}])
                         if "'''json" in raw: raw = raw.split("'''json")[1].split("'''")[0].strip()
@@ -178,8 +178,8 @@ class SocialSystem:
 
             try:
                 # local import
-                from backend.agent.agent import building_daily_summary_prompt
-                prompt = building_daily_summary_prompt(v, day)
+                from backend.agent.agent import daily_summaries
+                prompt = daily_summaries(v, day)
                 if not prompt: return
                 
                 raw = v.agent._call_llm([{"role": "user", "content": prompt}])
