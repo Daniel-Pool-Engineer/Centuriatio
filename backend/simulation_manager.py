@@ -329,6 +329,11 @@ class VillagerManager:
 
             # Move at 1.5x speed along waypoints
             distance = (self.walk_speed * 1.5) * dt
+
+            # If at the crosswalk and it is occupied, don't move
+            if self.traffic(self.fire_truck, dt):
+                distance = 0
+
             while self.fire_truck.waypoints and distance > 0:
                 tx, ty = self.fire_truck.waypoints[0]
                 x,y = self.fire_truck.position
@@ -377,6 +382,8 @@ class VillagerManager:
                     self.send_to(villager, target.location_id)
 
             if villager.is_walking:
+                if self.traffic(villager, dt):
+                    continue
                 if self._walk(villager, dt):
                     villager.location_id = villager.destination_id or villager.location_id
                     villager.destination_id = None
@@ -396,5 +403,54 @@ class VillagerManager:
 
         self.social.check_triggers(self.villagers, day, is_night) 
         return messages
-   
-    
+        
+    # Traffic system
+    # True if the villager or fire truck should wait
+    def traffic(self, crossing: Villager | FireTruck, time: float) -> bool:
+        
+        # If already waiting, decrease the timer until the time runs out
+        if crossing.traffic_stop > 0:
+            crossing.traffic_stop -= time
+            if crossing.traffic_stop <= 0:
+                crossing.intersection_occupied = True
+            return True
+
+        # Get x and y position of crossing entity
+        x = crossing.position[0]
+        y = crossing.position[1]
+
+        # Check if at the crosswalk
+        crosswalk_occupied = False
+        for sidewalk in self.network.by_id.values():
+            side_x = sidewalk.bounds[0]
+            side_y = sidewalk.bounds[1]
+            side_width = sidewalk.bounds[2]
+            side_height = sidewalk.bounds[3]
+            if sidewalk.id.startswith("crosswalk") and side_x <= x <= side_x + side_width and side_y <= y <= side_y + side_height:
+                crosswalk_occupied = True
+
+        # If not at the crosswalk, keep moving
+        if not crosswalk_occupied:
+            crossing.intersection_occupied = False
+            return False
+        # If already at the crosswalk, keep moving
+        if crossing.intersection_occupied:
+            return False
+
+        # If just got to the crosswalk, check if already occupied
+        if crossing is self.fire_truck:
+            crosswalk_occupied_state = False
+            for v in self.villagers:
+                if v.intersection_occupied and v.waypoints:
+                    crosswalk_occupied_state = True
+        else:
+            crosswalk_occupied_state = self.fire_truck.intersection_occupied
+
+        # If somebody is crossing, fire truck or villager, wait 5 seconds
+        if crosswalk_occupied_state:
+            crossing.traffic_stop = 5.0
+            return True
+
+        # If crosswalk is free, start crossing and let other know that you are crossing
+        crossing.intersection_occupied = True
+        return False
