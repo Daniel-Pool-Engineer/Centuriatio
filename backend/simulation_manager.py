@@ -419,15 +419,35 @@ class VillagerManager:
         x = crossing.position[0]
         y = crossing.position[1]
 
-        # Check if at the crosswalk
+        # Create a block that contains all crosswalks
         crosswalk_occupied = False
+        crosswalk_left = []
+        crosswalk_right = []
+        crosswalk_top = []
+        crosswalk_bottom = []
         for sidewalk in self.network.by_id.values():
-            side_x = sidewalk.bounds[0]
-            side_y = sidewalk.bounds[1]
-            side_width = sidewalk.bounds[2]
-            side_height = sidewalk.bounds[3]
-            if sidewalk.id.startswith("crosswalk") and side_x <= x <= side_x + side_width and side_y <= y <= side_y + side_height:
+            if sidewalk.id.startswith("crosswalk"):
+                side_x = sidewalk.bounds[0]
+                side_y = sidewalk.bounds[1]
+                side_width = sidewalk.bounds[2]
+                side_height = sidewalk.bounds[3]
+                if side_x <= x <= side_x + side_width and side_y <= y <= side_y + side_height:
+                    crosswalk_occupied = True
+                crosswalk_left.append(side_x)
+                crosswalk_right.append(side_x + side_width)
+                crosswalk_top.append(side_y)
+                crosswalk_bottom.append(side_y + side_height)
+
+        if crossing is self.fire_truck:
+            crosswalk_box_left = min(crosswalk_left) - 10
+            crosswalk_box_right = max(crosswalk_right) + 10
+            crosswalk_box_top = min(crosswalk_top) - 10
+            crosswalk_box_bottom = max(crosswalk_bottom) + 10
+
+            if crosswalk_box_left <= x <= crosswalk_box_right and crosswalk_box_top <= y <= crosswalk_box_bottom:
                 crosswalk_occupied = True
+            else:
+                crosswalk_occupied = False
 
         # If not at the crosswalk, keep moving
         if not crosswalk_occupied:
