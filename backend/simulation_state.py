@@ -60,6 +60,7 @@ class Villager:
     # AI decisions
     previous_action: str | None = None
     current_task: str = "Waiting"
+    task_history: list[str] = field(default_factory = list)
 
     # Scripted behavior
     is_scripted: bool = False
@@ -70,9 +71,10 @@ class Villager:
 
     # Agent communication
     recent_encounters: list[MemoryEntry] = field(default_factory=list)
-    converstion_partners: "Villager | None" = None
+    daily_summaries: list[str] = field(default_factory = list)
+    conversation_partner: "Villager | None" = None
     last_spoke_phase: dict[str, str] = field(default_factory = dict)
-    
+
     @property
     def is_walking(self) -> bool:
         return bool(self.waypoints) or self.in_truck
