@@ -89,12 +89,14 @@ class BottomMenuBar(FloatingMenuBar):
         self.freeze_button = Button("Freeze", on_click=lambda: self._control("freeze"))
         self.speed_button = Button("Speed 1x", on_click=lambda: self._control("speed"))
         self.reset_button = Button("Reset", on_click=lambda: self._control("reset"))
+        self.finish_button = Button("Finish", on_click=lambda: self._control("finish"))
 
         self.buttons = [
             *self.disruption_buttons,
             self.freeze_button,
             self.speed_button,
             self.reset_button,
+            self.finish_button,
         ]
 
     def toggle_disruption(self, name: str) -> None:
@@ -337,7 +339,7 @@ class RightMenuBar(FloatingMenuBar):
         super().draw(surface)
         
         if self._title_surface is None:
-            self._title_surface = self.font.render("Villager Journal", True, self.text_color)
+            self._title_surface = self.font.render("Event Timeline", True, self.text_color)
             
         label_rect = self._title_surface.get_rect(
             midtop=(self.rect.centerx, self.rect.top + self.font.get_linesize() // 2)
