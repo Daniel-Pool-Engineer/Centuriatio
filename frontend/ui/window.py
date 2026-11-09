@@ -334,6 +334,7 @@ def zoom_at(position: tuple[int, int], direction: int) -> None:
 
 _overlay_surface = None
 
+
 def draw_overlay(alpha: int) -> None:
     global _overlay_surface
     if _overlay_surface is None or _overlay_surface.get_size() != screen.get_size():
@@ -341,6 +342,51 @@ def draw_overlay(alpha: int) -> None:
     
     _overlay_surface.fill((10, 15, 40, alpha))
     screen.blit(_overlay_surface, (0, 0))
+
+
+def draw_power_warning() -> None:
+    # Only show the warnings when there is a power outage
+    if active_disruption != "Power Outage":
+        return
+
+    # Make the warnings flash on and off
+    if (pygame.time.get_ticks() // 500) % 2 == 0:
+        return
+
+    # Get the electrical building's location
+    building = village_map.building("electrical")
+    x, y, width, height = building.bounds
+
+    # Put warning signs around the building
+    warning_positions = [
+        (x - 15, y + 20),
+        (x + width + 15, y + 20),
+        (x - 15, y + height - 20),
+        (x + width + 15, y + height - 20),
+        (x + width // 2, y - 25),
+    ]
+
+    warning_font = pygame.font.Font(None, max(35, round(80 * renderer.zoom)))
+    warning_font.set_bold(True)
+
+    for position in warning_positions:
+        screen_position = renderer.world_to_screen(position)
+
+        # Red exclamation point
+        warning = warning_font.render("!", True, (255, 0, 0))
+        warning_rect = warning.get_rect(center=screen_position)
+
+        # Add a dark outline so it is easier to see
+        outline = warning_font.render("!", True, (80, 0, 0))
+
+        for offset_x in [-2, 2]:
+            for offset_y in [-2, 2]:
+                screen.blit(
+                    outline,
+                    (warning_rect.x + offset_x, warning_rect.y + offset_y)
+                )
+
+        screen.blit(warning, warning_rect)
 
 
 def villager_presentations() -> list[VillagerPresentation]:
@@ -553,7 +599,9 @@ while app_running:
             draw_overlay(90)
         if active_disruption == "Power Outage":
             draw_overlay(140)
+
         villager_renderer.draw(screen, renderer, villagers.villagers, villagers.fire_truck)
+        draw_power_warning()
         villager_views = villager_presentations()
         hovered_villager = villager_at(pygame.mouse.get_pos(), villager_views)
         selected_villager = next(
