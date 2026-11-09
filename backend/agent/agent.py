@@ -211,12 +211,14 @@ def reflection_symbl(villager) -> str:
 
 # Prompt for daily summary, sent after 1 day
 def daily_summaries(villager, day: int) -> str:
-    todays_encounters = [m for m in villager.recent_encounters if m.day == day]
+    todays_encounters = [m.summary for m in villager.recent_encounters if m.day == day]
 
-    if not todays_encounters:
+    todays_tasks = [t for t in villager.task_history if t.startswith(f"Day {day}:")]
+
+    if not todays_encounters and not todays_tasks:
         return ""
 
-    memories = "\n".join([f"- {m.summary}" for m in todays_encounters])
+    memories = "\n".join([f"- {m}" for m in todays_encounters + todays_tasks])
 
     return f"""You are {villager.name} ({villager.agent.profile.role}).
     Today is Day {day}.
