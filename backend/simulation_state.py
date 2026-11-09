@@ -34,6 +34,10 @@ class FireTruck:
     destination_building_id: str | None = None #target building on arrival
     angle: float = 0.0 # heading in degrees, for sprite rotation
 
+    # Intersection
+    traffic_stop: float = 0.0 # how long to wait at intersection
+    intersection_occupied: bool = False # True while on the crosswalk
+
 
 @dataclass
 class Villager:
@@ -74,6 +78,10 @@ class Villager:
     daily_summaries: list[str] = field(default_factory = list)
     conversation_partner: "Villager | None" = None
     last_spoke_phase: dict[str, str] = field(default_factory = dict)
+
+    # Intersection
+    traffic_stop: float = 0.0
+    intersection_occupied: bool = False
 
     @property
     def is_walking(self) -> bool:
