@@ -12,6 +12,7 @@ from backend.map.pathfinding import SidewalkNetwork, centerline_point
 from backend.simulation_state import Villager, FireTruck
 from backend.agent.config import STARTING_VILLAGERS, SCRIPTED_NPCS
 from backend.map.vehicle_navigation import VehicleNetwork
+from backend.social_system import SocialSystem
 
 Vec = tuple[float,float]
 
@@ -26,6 +27,7 @@ class VillagerManager:
 
         self.buildings = {b.id: b for b in village_map.buildings}
         self.rng = rng or random.Random()
+        self.social = SocialSystem(self.rng, self.buildings)
         self.llm_client = llm_client
         self.power_outage = False #while True, routine sleeping/waking is suppressed
         self.is_night = False
@@ -229,11 +231,6 @@ class VillagerManager:
                     if villager is None:
                         continue
 
-                    if action.journal:
-                        messages.append(f"{villager.name}: {action.journal}")
-
-                    villager.previous_action = action.action
-
                     if action.action == "restore_power" and recovery is not None and is_power_outage:
                         if recovery.restore_possible(villager.location_id or ""):
                             self.restore_requested = True
@@ -245,6 +242,11 @@ class VillagerManager:
                     if action.target_location:
                         destination = action.target_location.replace("_", " ").title()
                         villager.current_task = f"{villager.current_task} - {destination}"
+                        
+                    log_text = action.journal if action.journal else villager.current_task
+                    messages.append(f"{villager.name}: {log_text}")
+                    
+                    villager.task_history.append(f"Day {clock.day_number}: {log_text}")
 
                     if action.target_location and action.target_location != villager.location_id:
                         # Move to the requested location
@@ -302,7 +304,9 @@ class VillagerManager:
                         crisis_area=outage_area if is_power_outage else None,
                         power_on=not is_power_outage, 
                         previous_action=villager.previous_action,
-                        parts_arrived=recovery.parts_arrived if recovery is not None and is_power_outage else None
+                        parts_arrived=recovery.parts_arrived if recovery is not None and is_power_outage else None,
+                        recent_encounters = villager.recent_encounters[-3:], # Passes the last three memories
+                        daily_summaries = villager.daily_summaries[-2:],
                     )
                     backend_sim.queue_agent(villager.agent_id, villager.agent, ctx)
                     villager.wait_time = 999.0
@@ -310,7 +314,7 @@ class VillagerManager:
         
         return messages
 
-    def update(self, dt: float) -> list[str]:
+    def update(self, dt: float, day:int, is_night: bool) -> list[str]:
         """move villagers, returns journal messages for anything that happened"""
         messages: list[str] = []
 
@@ -377,9 +381,6 @@ class VillagerManager:
                     villager.location_id = villager.destination_id or villager.location_id
                     villager.destination_id = None
                     villager.wait_time = 0.0
-                    if villager.location_id:
-                        place = self.buildings[villager.location_id].display_name
-                        messages.append(f"{villager.name} arrived at {place}")
 
             elif not self.is_night:
                 if villager.wait_time > 0:
@@ -392,7 +393,8 @@ class VillagerManager:
                         dest = self.rng.choice(choices)
                         self.send_to(villager, dest)
                         villager.wait_time = self.rng.uniform(15.0, 30.0)
-                        
+
+        self.social.check_triggers(self.villagers, day, is_night) 
         return messages
    
     
