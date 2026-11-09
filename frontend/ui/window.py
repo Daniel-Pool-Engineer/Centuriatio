@@ -24,6 +24,7 @@ pygame.init()
 class AppState(Enum):
     MAIN_MENU = auto()
     RUNNING = auto()
+    EXPORTING = auto()
 
 
 class OverlayState(Enum):
@@ -158,6 +159,12 @@ def reset_simulation() -> None:
 
 
 def handle_control(name: str) -> None:
+    global app_state
+    if name == "finish":
+        app_state = AppState.EXPORTING
+        villagers.social.export_now(villagers.villagers, sim_clock.day_number)
+        return
+    
     # called by the Freeze / Speed / Reset buttons
     if name == "freeze":
         sim_clock.control_pause()
@@ -496,13 +503,17 @@ while app_running:
             for villager in villagers.villagers:
                 if villager.agent is not None:
                     villager.decision_cooldown = 0.0
+
+            if phase == "Night":
+                villagers.social.generate_daily_summaries(villagers.villagers, sim_clock.day_number)
+                
             log_period()
             log("Night falls, villagers head home" if phase == "Night" else "Morning, villagers start their day")
 
         sim_dt = dt * sim_clock.speed
         
         # Move the villagers & fire truck
-        for message in villagers.update(sim_dt):
+        for message in villagers.update(sim_dt, sim_clock.day_number, sim_clock.day_night == "Night"):
             log(message)
             
         # Process AI decisions
@@ -568,6 +579,37 @@ while app_running:
             settings_menu.draw(screen)
         elif overlay_state == OverlayState.CONFIRM_EXIT:
             exit_menu.draw(screen)
+
+    #Export for JSON 
+    elif app_state == AppState.EXPORTING:
+        if villagers.social.export_data is not None:
+            result = villagers.social.export_data
+            villagers.social.export_data = None
+            villagers.social.is_exporting = False
+            app_state = AppState.MAIN_MENU
+            reset_simulation()
+            if result.startswith("ERROR"):
+                print(f"Export failed: {result}")
+            continue
+
+        screen.fill((20, 24, 34))
+        
+        title_font = pygame.font.Font(None, 40)
+        list_font = pygame.font.Font(None, 26)
+        
+        title = title_font.render("Generating reflections...", True, (255, 255, 255))
+        screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 100)))
+        
+        y_offset = 180
+        for name, status in villagers.social.export_progress:
+            color = (200, 200, 200)
+            if status == "PASS": color = (100, 255, 100)
+            elif status == "FAIL": color = (255, 200, 100)
+            
+            text = list_font.render(f"{status}  {name}", True, color)
+            screen.blit(text, (screen.get_width() // 2 - 150, y_offset))
+            y_offset += 30
+
     else:
         screen.fill((20, 24, 34))
         if overlay_state == OverlayState.SETTINGS:
