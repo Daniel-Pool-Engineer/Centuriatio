@@ -25,6 +25,7 @@ pygame.init()
 class AppState(Enum):
     MAIN_MENU = auto()
     RUNNING = auto()
+    EXPORTING = auto()
 
 
 class OverlayState(Enum):
@@ -42,8 +43,11 @@ except Exception as exc:
     print(f"LLM not available; villagers will use fallback actions: {exc}")
     llm_client = None
 
-OUTAGE_DURATION_DAYS = 3      
+OUTAGE_DURATION_DAYS = 3        # fixed for now, a duration selector can replace this later
 OUTAGE_AREA = "whole village"
+
+# traffic: corners of the main intersection where the traffic lights stand (world positions)
+TRAFFIC_LIGHT_POSITIONS = [(1456, 1072), (1648, 1072), (1456, 1264), (1648, 1264)]
 
 world_state = WorldState()
 backend_sim = BackendSimulation(world_state, llm_client)
@@ -202,6 +206,12 @@ def reset_simulation() -> None:
 
 
 def handle_control(name: str) -> None:
+    global app_state
+    if name == "finish":
+        app_state = AppState.EXPORTING
+        villagers.social.export_now(villagers.villagers, sim_clock.day_number)
+        return
+    
     # called by the Freeze / Speed / Reset buttons
     if name == "freeze":
         sim_clock.control_pause()
@@ -371,6 +381,7 @@ def zoom_at(position: tuple[int, int], direction: int) -> None:
 
 _overlay_surface = None
 
+
 def draw_overlay(alpha: int) -> None:
     global _overlay_surface
     if _overlay_surface is None or _overlay_surface.get_size() != screen.get_size():
@@ -378,6 +389,109 @@ def draw_overlay(alpha: int) -> None:
     
     _overlay_surface.fill((10, 15, 40, alpha))
     screen.blit(_overlay_surface, (0, 0))
+
+
+def draw_power_warning() -> None:
+    # Only show the warnings when there is a power outage
+    if active_disruption != "Power Outage":
+        return
+
+    # Make the warnings flash on and off
+    if (pygame.time.get_ticks() // 500) % 2 == 0:
+        return
+
+    # Get the electrical building's location
+    building = village_map.building("electrical")
+    x, y, width, height = building.bounds
+
+    # Put warning signs around the building
+    warning_positions = [
+        (x - 15, y + 20),
+        (x + width + 15, y + 20),
+        (x - 15, y + height - 20),
+        (x + width + 15, y + height - 20),
+        (x + width // 2, y - 25),
+    ]
+
+    warning_font = pygame.font.Font(None, max(35, round(80 * renderer.zoom)))
+    warning_font.set_bold(True)
+
+    for position in warning_positions:
+        screen_position = renderer.world_to_screen(position)
+
+        # Red exclamation point
+        warning = warning_font.render("!", True, (255, 0, 0))
+        warning_rect = warning.get_rect(center=screen_position)
+
+        # Add a dark outline so it is easier to see
+        outline = warning_font.render("!", True, (80, 0, 0))
+
+        for offset_x in [-2, 2]:
+            for offset_y in [-2, 2]:
+                screen.blit(
+                    outline,
+                    (warning_rect.x + offset_x, warning_rect.y + offset_y)
+                )
+
+        screen.blit(warning, warning_rect)
+
+
+def pedestrians_crossing() -> bool:
+    # traffic: True while a villager is walking across a crosswalk (backend sets intersection_occupied)
+    assert villagers is not None
+    return any(
+        v.intersection_occupied and v.waypoints and not v.in_truck
+        for v in villagers.villagers
+    )
+
+
+def draw_traffic_lights() -> None:
+    # traffic: red = people crossing so the truck must stop, green = road is clear
+    # traffic: during a power outage the lights are off
+    power_out = active_disruption == "Power Outage"
+    stop_vehicles = pedestrians_crossing()
+    red_on = not power_out and stop_vehicles
+    green_on = not power_out and not stop_vehicles
+
+    box_width = max(6, round(16 * renderer.zoom))
+    box_height = max(14, round(42 * renderer.zoom))
+    bulb_radius = max(2, round(5 * renderer.zoom))
+
+    for position in TRAFFIC_LIGHT_POSITIONS:
+        x, y = renderer.world_to_screen(position)
+
+        # traffic: dark box that holds the three lights
+        housing = pygame.Rect(0, 0, box_width, box_height)
+        housing.midbottom = (x, y)
+        pygame.draw.rect(screen, (30, 30, 32), housing, border_radius=3)
+        pygame.draw.rect(screen, (90, 90, 95), housing, width=1, border_radius=3)
+
+        # traffic: top = red, middle = yellow (unused), bottom = green; bright when on, dim when off
+        bulbs = [
+            (230, 50, 50) if red_on else (70, 25, 25),
+            (70, 60, 20),
+            (60, 210, 90) if green_on else (25, 60, 30),
+        ]
+        for index, color in enumerate(bulbs):
+            bulb_y = housing.top + box_height * (index * 2 + 1) // 6
+            pygame.draw.circle(screen, color, (housing.centerx, bulb_y), bulb_radius)
+
+
+def draw_traffic_waits() -> None:
+    # traffic: show a small red "Waiting" tag above anyone stopped at the crosswalk
+    assert villagers is not None
+    waiting_positions = [
+        v.position for v in villagers.villagers if v.traffic_stop > 0 and not v.in_truck
+    ]
+    if villagers.fire_truck.traffic_stop > 0:
+        waiting_positions.append(villagers.fire_truck.position)
+
+    for position in waiting_positions:
+        x, y = renderer.world_to_screen(position)
+        label = info_font.render("Waiting", True, (255, 255, 255))
+        label_rect = label.get_rect(midbottom=(x, y - max(22, round(40 * renderer.zoom))))
+        pygame.draw.rect(screen, (200, 50, 50), label_rect.inflate(6, 3), border_radius=3)
+        screen.blit(label, label_rect)
 
 
 def villager_presentations() -> list[VillagerPresentation]:
@@ -540,10 +654,15 @@ while app_running:
             for villager in villagers.villagers:
                 if villager.agent is not None:
                     villager.decision_cooldown = 0.0
+
+            if phase == "Night":
+                villagers.social.generate_daily_summaries(villagers.villagers, sim_clock.day_number)
+
             # recovery: the next morning after power returns, life is back to normal
             finished_recovery = in_recovery and phase == "Day"
             if finished_recovery:
                 in_recovery = False
+                
             log_period()
             log("Night falls, villagers head home" if phase == "Night" else "Morning, villagers start their day")
             if finished_recovery:
@@ -551,8 +670,8 @@ while app_running:
 
         sim_dt = dt * sim_clock.speed
         
-        # Move the villagers & fire truck
-        for message in villagers.update(sim_dt):
+        # Move the villagers & fire truck (the backend also handles stopping at crosswalks)
+        for message in villagers.update(sim_dt, sim_clock.day_number, sim_clock.day_night == "Night"):
             log(message)
             
         # Process AI decisions
@@ -599,7 +718,11 @@ while app_running:
             draw_overlay(90)
         if active_disruption == "Power Outage":
             draw_overlay(140)
+
+        draw_traffic_lights()  # traffic: drawn after the dark overlays so the lights glow at night
         villager_renderer.draw(screen, renderer, villagers.villagers, villagers.fire_truck)
+        draw_traffic_waits()   # traffic: "Waiting" tags above anyone stopped at the crosswalk
+        draw_power_warning()
         villager_views = villager_presentations()
         hovered_villager = villager_at(pygame.mouse.get_pos(), villager_views)
         selected_villager = next(
@@ -625,6 +748,37 @@ while app_running:
             settings_menu.draw(screen)
         elif overlay_state == OverlayState.CONFIRM_EXIT:
             exit_menu.draw(screen)
+
+    #Export for JSON 
+    elif app_state == AppState.EXPORTING:
+        if villagers.social.export_data is not None:
+            result = villagers.social.export_data
+            villagers.social.export_data = None
+            villagers.social.is_exporting = False
+            app_state = AppState.MAIN_MENU
+            reset_simulation()
+            if result.startswith("ERROR"):
+                print(f"Export failed: {result}")
+            continue
+
+        screen.fill((20, 24, 34))
+        
+        title_font = pygame.font.Font(None, 40)
+        list_font = pygame.font.Font(None, 26)
+        
+        title = title_font.render("Generating reflections...", True, (255, 255, 255))
+        screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 100)))
+        
+        y_offset = 180
+        for name, status in villagers.social.export_progress:
+            color = (200, 200, 200)
+            if status == "PASS": color = (100, 255, 100)
+            elif status == "FAIL": color = (255, 200, 100)
+            
+            text = list_font.render(f"{status}  {name}", True, color)
+            screen.blit(text, (screen.get_width() // 2 - 150, y_offset))
+            y_offset += 30
+
     else:
         screen.fill((20, 24, 34))
         if overlay_state == OverlayState.SETTINGS:

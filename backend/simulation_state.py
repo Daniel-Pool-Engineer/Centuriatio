@@ -5,14 +5,24 @@ from typing import Dict, Any, List, Optional
 
 Color = tuple[int, int, int]
 Vec = tuple[float, float]
-@dataclass
 
+@dataclass
 class WorldState:
     is_data_ready: bool = False
     new_actions: Dict[str, Any] = field(default_factory=dict)
     
     # Thread lock to prevent race conditions
     lock: threading.Lock = field(default_factory=threading.Lock)
+
+
+@dataclass
+class MemoryEntry:
+    day: int
+    phase: str
+    location: str
+    with_ids: list[str]
+    summary: str
+    outcome: str = "normal"
 
 
 @dataclass
@@ -23,6 +33,10 @@ class FireTruck:
     is_active: bool = False #True while driving
     destination_building_id: str | None = None #target building on arrival
     angle: float = 0.0 # heading in degrees, for sprite rotation
+
+    # Intersection
+    traffic_stop: float = 0.0 # how long to wait at intersection
+    intersection_occupied: bool = False # True while on the crosswalk
 
 
 @dataclass
@@ -50,6 +64,7 @@ class Villager:
     # AI decisions
     previous_action: str | None = None
     current_task: str = "Waiting"
+    task_history: list[str] = field(default_factory = list)
 
     # Scripted behavior
     is_scripted: bool = False
@@ -57,6 +72,16 @@ class Villager:
 
     # Ben only - fire fighter agent
     in_truck: bool = False
+
+    # Agent communication
+    recent_encounters: list[MemoryEntry] = field(default_factory=list)
+    daily_summaries: list[str] = field(default_factory = list)
+    conversation_partner: "Villager | None" = None
+    last_spoke_phase: dict[str, str] = field(default_factory = dict)
+
+    # Intersection
+    traffic_stop: float = 0.0
+    intersection_occupied: bool = False
 
     @property
     def is_walking(self) -> bool:
