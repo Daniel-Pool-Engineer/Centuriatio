@@ -146,8 +146,11 @@ class SocialSystem:
                 
                 villagers_data = []
                 for v in villagers:
+                    if v.agent is None:
+                        continue 
+
                     villagers_data.append({
-                        "id": v.agent_id, "name": v.name, "role": v.agent.profile.role if v.agent else "NPC",
+                        "id": v.agent_id, "name": v.name, "role": v.agent.profile.role,
                         "reflection": results.get(v.agent_id, {}).get("reflection", ""),
                         "lessons": results.get(v.agent_id, {}).get("lessons", []),
                         "daily_summaries": v.daily_summaries,

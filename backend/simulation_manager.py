@@ -245,8 +245,10 @@ class VillagerManager:
                         
                     log_text = action.journal if action.journal else villager.current_task
                     messages.append(f"{villager.name}: {log_text}")
-                    
-                    villager.task_history.append(f"Day {clock.day_number}: {log_text}")
+
+                    new_task_string = f"Day {clock.day_number}: {log_text}"
+                    if not villager.task_history or villager.task_history[-1] != new_task_string:
+                        villager.task_history.append(new_task_string)
 
                     if action.target_location and action.target_location != villager.location_id:
                         # Move to the requested location

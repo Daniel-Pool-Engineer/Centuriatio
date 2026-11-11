@@ -143,6 +143,7 @@ class VillagerAgent:
             "If the action involves going somewhere, set target_location"
             " to one of the valid locations. Otherwise use null.\n"
             "If you are traveling to another building, explain WHY in your journal (e.g., 'Going to the electrical plant to ask when power will be restored.').\n"
+            "CRITICAL RULE: Do not repeat the exact same action you just did in the previous step if you are already in the correct location. Move on to a new task or state that you are resting. \n"
             "Choose the next action."
         )
 
@@ -224,7 +225,7 @@ def daily_summaries(villager, day: int) -> str:
     Today is Day {day}.
     {memories}
 
-    Write exactly 3 sentences summarizing your day. Keep it in first-person (e.g., "I helped Felix with his lights and then went to sleep.").
+    Write exactly 3 sentences summarizing your day chronologically (Morning, Afternoon, Evening). Keep it in first-person (e.g., "I helped Felix with his lights and then went to sleep.").
 
     Output JSON: {{"summary": "your 3 sentence here"}}"""
 
