@@ -85,6 +85,7 @@ class VillagerManager:
 
     
     def get_villager(self, agent_id: str) -> Villager | None:
+        # Loop up a villager object by their string Id.
         for v in self.villagers:
             if v.agent_id == agent_id:
                 return v
@@ -92,7 +93,7 @@ class VillagerManager:
 
 
     def dispatch_truck(self, driver: Villager, target_id: str) -> None:
-        # Load the driver (+ crew ) and set a road route.
+        # Loads the driver (+ crew ) and set a road route.
         building = self.buildings[target_id]
 
         # Calculate a road route from the truck's current position
@@ -101,7 +102,7 @@ class VillagerManager:
         self.fire_truck.waypoints = road_points
         self.fire_truck.destination_building_id = target_id
 
-        # Driver boards
+        # Driver boards the truck
         self.fire_truck.passengers = [driver]
         driver.in_truck = True
         driver.location_id = target_id
@@ -109,7 +110,7 @@ class VillagerManager:
         driver.waypoints.clear()
         driver.position = self.fire_truck.position
 
-        #Anyone following the driver boards too
+        # Anyone following the driver boards too
         for v in self.villagers:
             if v.following_target == driver.agent_id:
                 v.in_truck = True
@@ -121,10 +122,10 @@ class VillagerManager:
 
 
     def set_night(self, is_night: bool) -> None:
-        # night: villagers go home, morning: they start wandering again
+        # Night: villagers go home, morning: they start wandering again
         self.is_night = is_night
         if self.power_outage:
-            return  # during an outage they stay at the shelter
+            return  # During an outage, they stay where they are
         if is_night:
             self._send_everyone_home()
         else:
@@ -132,6 +133,7 @@ class VillagerManager:
 
 
     def _send_everyone_home(self) -> None:
+        # Force all villagers to walk to their home building.
         for villager in self.villagers:
             at_home = villager.location_id == villager.home_id and not villager.is_walking
             if not at_home:
@@ -145,7 +147,7 @@ class VillagerManager:
 
 
     def send_to(self, villager: Villager, building_id: str) -> None:
-        # Assign a new walking route. Clears 'location_id' until arrival
+        # Assigns a new walking route. Clears 'location_id' until arrival
         building = self.buildings[building_id]
         villager.waypoints = self.network.route(villager.position, villager.sidewalk_id, building)
         villager.destination_id = building_id
@@ -159,12 +161,15 @@ class VillagerManager:
             (target_x, target_y), sidewalk_id = villager.waypoints[0]
             x, y = villager.position
             gap = math.hypot(target_x - x, target_y - y)
+
             if gap <= distance:
+                # Reached the waypoint with leftover distance, then consume and move on.
                 villager.position = (target_x, target_y)
                 villager.sidewalk_id = sidewalk_id
                 villager.waypoints.pop(0)
                 distance -= gap
             else:
+                # Move towards the waypoint.
                 villager.position = (
                     x + (target_x - x) / gap * distance,
                     y + (target_y - y) / gap * distance,
@@ -231,6 +236,7 @@ class VillagerManager:
                     if villager is None:
                         continue
 
+                    # Check if the power is restored
                     if action.action == "restore_power" and recovery is not None and is_power_outage:
                         if recovery.restore_possible(villager.location_id or ""):
                             self.restore_requested = True
@@ -238,6 +244,7 @@ class VillagerManager:
                         else:
                             messages.append(f"{villager.name} is not able to restore power right now")
 
+                    # Update the UI task label.
                     villager.current_task = action.action.replace("_", " ").title()
                     if action.target_location:
                         destination = action.target_location.replace("_", " ").title()
@@ -246,10 +253,12 @@ class VillagerManager:
                     log_text = action.journal if action.journal else villager.current_task
                     messages.append(f"{villager.name}: {log_text}")
 
+                    # Save to task history (prevents duplicate consecutive entries)
                     new_task_string = f"Day {clock.day_number}: {log_text}"
                     if not villager.task_history or villager.task_history[-1] != new_task_string:
                         villager.task_history.append(new_task_string)
 
+                    # Execute movement based on the AI's decision
                     if action.target_location and action.target_location != villager.location_id:
                         # Move to the requested location
                         try:
@@ -257,10 +266,13 @@ class VillagerManager:
                                 self.dispatch_truck(villager, action.target_location)
                             else:
                                 self.send_to(villager, action.target_location)
-                            villager.wait_time = 999.0
+                            villager.wait_time = 999.0 # Wait until they arrive to make a new decision
+
                         except (ValueError, KeyError) as exc:
                             messages.append(f"  route failed for {villager.name}: {exc}")
                             villager.wait_time = 5.0
+
+                    # If they are a first reponder and didn't pick a detination, force them to patrol.
                     elif (
                         villager.agent is not None
                         and villager.agent.profile.role == "first_responder"
@@ -277,7 +289,8 @@ class VillagerManager:
                             villager.wait_time = 5.0
                     else:
                         villager.wait_time = 0.0
-                
+
+                # Reset the queue
                 world_state.is_data_ready = False
                 world_state.new_actions.clear()
 
@@ -288,6 +301,8 @@ class VillagerManager:
         for villager in self.villagers:
             if villager.is_scripted or villager.agent is None:
                 continue
+
+            # They must be idle, not waiting, and not already queued. 
             if (
                 not villager.is_walking
                 and villager.wait_time <= 0
@@ -308,7 +323,7 @@ class VillagerManager:
                         previous_action=villager.previous_action,
                         parts_arrived=recovery.parts_arrived if recovery is not None and is_power_outage else None,
                         recent_encounters = villager.recent_encounters[-3:], # Passes the last three memories
-                        daily_summaries = villager.daily_summaries[-2:],
+                        daily_summaries = villager.daily_summaries[-2:], # Last 2 days
                     )
                     backend_sim.queue_agent(villager.agent_id, villager.agent, ctx)
                     villager.wait_time = 999.0
@@ -320,7 +335,7 @@ class VillagerManager:
         """move villagers, returns journal messages for anything that happened"""
         messages: list[str] = []
 
-        #moving fire truck
+        # Fire truck movement
         if self.fire_truck.is_active and self.fire_truck.waypoints:
             # Update heading for sprite rotation
             tx, ty = self.fire_truck.waypoints[0]
@@ -371,22 +386,25 @@ class VillagerManager:
 
                 self.fire_truck.passengers.clear()
                 self.fire_truck.destination_building_id = None
-        
+
+        # Villager Movement
         for villager in self.villagers:
 
             if villager.in_truck:
                 continue
 
-            # fireman crew follow the first responder agent
+            # Fireman crew follow the first responder agent
             if villager.following_target and not villager.is_walking:
                 target = self.get_villager(villager.following_target)
                 if target and target.location_id and target.location_id != villager.location_id:
                     self.send_to(villager, target.location_id)
 
             if villager.is_walking:
+                # Stop at the crosswalk if the truck is coming
                 if self.traffic(villager, dt):
                     continue
                 if self._walk(villager, dt):
+                    # Arrived at destination.
                     villager.location_id = villager.destination_id or villager.location_id
                     villager.destination_id = None
                     villager.wait_time = 0.0
@@ -403,12 +421,13 @@ class VillagerManager:
                         self.send_to(villager, dest)
                         villager.wait_time = self.rng.uniform(15.0, 30.0)
 
+        # Check if any AI villagers are standing next to each other and should start a conversation.
         self.social.check_triggers(self.villagers, day, is_night) 
         return messages
         
     # Traffic system
-    # True if the villager or fire truck should wait
     def traffic(self, crossing: Villager | FireTruck, time: float) -> bool:
+        """Returns True if the villager or fire truck should wait at the crosswalk."""
         
         # If already waiting, decrease the timer until the time runs out
         if crossing.traffic_stop > 0:
