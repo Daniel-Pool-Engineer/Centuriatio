@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class RoleProfile:
     role: str
-    permitted_actions: Set[str]
+    suggested_actions: Set[str]
     identity_line: str
     role_guidance: str
     workplace: str = "office"
@@ -141,7 +141,7 @@ class VillagerAgent:
             f"Power: {'on' if ctx.power_on else 'off'}\n"
             f"{string_addition}"
             f"Previous action: {ctx.previous_action or 'none'}\n"
-            f"Suggested actions (you may invent others if appropriate): {sorted(self.profile.permitted_actions)}\n"
+            f"Suggested actions (you may invent others if appropriate): {sorted(self.profile.suggested_actions)}\n"
             f"Valid locations: {sorted(VillageMap.locations)}\n"
             "If the action involves going somewhere, set target_location"
             " to one of the valid locations. Otherwise use null.\n"

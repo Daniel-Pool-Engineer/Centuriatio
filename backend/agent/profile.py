@@ -1,11 +1,10 @@
 from backend.agent.agent import RoleProfile
 
 # One profile per role; fields are consumed by VillagerAgent.build_prompt().
-# Note: permitted_action must match exactly.
 CITIZEN = RoleProfile(
     role="citizen",
     workplace="office",
-    permitted_actions={
+    suggested_actions={
         "work", "shop", "check_supplies", "conserve", "seek_help",
         "return_home", "stay", "travel",
     },
@@ -21,7 +20,7 @@ CITIZEN = RoleProfile(
 FIRST_RESPONDER = RoleProfile(
     role="first_responder",
     workplace="fire",
-    permitted_actions={
+    suggested_actions={
         "work", "shop", "patrol", "assist_residents", "check_for_help_needed", 
         "return_home", "stay", "travel"
     },
@@ -38,7 +37,7 @@ FIRST_RESPONDER = RoleProfile(
 ELECTRICIAN = RoleProfile(
     role = "electrician",
     workplace="electrical",
-    permitted_actions={
+    suggested_actions={
         "work", "shop", "check_supplies", "order_supplies", "inspect", "maintain_safe_area", 
         "restore_power", "return_home", "stay", "travel", "test"
     },
@@ -51,13 +50,13 @@ ELECTRICIAN = RoleProfile(
         "Maintain a safe repair area, "
         "restore power when the required equipment becomes available, indicated by the 'arrived' status."
     ),
-        speed = 1.0
+    speed = 1.0
 )
 
 DOCTOR = RoleProfile(
     role="doctor",
     workplace="hospital",
-    permitted_actions={
+    suggested_actions={
         "work", "check_backup", "protect_medication", "conserve", 
         "request_resources", "return_home", "stay", "travel"
     },
