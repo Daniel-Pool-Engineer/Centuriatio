@@ -20,7 +20,7 @@ class RoleProfile:
     fallback_action: str = "wait"
     fallback_journal: str = "{name} stayed put; no valid action was chosen."
 
-
+# The structured output expected from the LLM when it makes a decision.
 @dataclass
 class ActionRequest:
     action: str
@@ -28,7 +28,7 @@ class ActionRequest:
     journal: str = ""
 
 
-# Snapshot of the village state.
+# Snapshot of the village state; Used as context for the LLM to understand current situation.
 @dataclass
 class VillagerContext:
     villager_id: str
@@ -70,6 +70,7 @@ class VillagerAgent:
     def speed(self) -> float:
         return self.profile.speed
 
+    # Get the LLM's decision for the current turn.
     def decide(self, ctx: VillagerContext) -> ActionRequest:
         prompt = self.build_prompt(ctx)
         try:
@@ -81,7 +82,7 @@ class VillagerAgent:
         
         return action
 
-
+    #Returns a safe default action if the LLM fails or outputs invalid JSON.
     def fallback(self, ctx: VillagerContext) -> ActionRequest:
         return ActionRequest(
             action=self.profile.fallback_action,
@@ -89,6 +90,7 @@ class VillagerAgent:
             journal=self.profile.fallback_journal.format(name=self.name),
         )
 
+    # Prompt for role data, crisis state, and memory.
     def build_prompt(self, ctx: VillagerContext) -> List[Dict[str, str]]:
         system = (
             f"{self.profile.identity_line}\n"
@@ -117,6 +119,7 @@ class VillagerAgent:
             else:
                 string_addition = "Waiting for a replacement part.\n"
 
+        # Format the memory (summaries and encounters) into a text block.
         memory_text = ""
         if ctx.daily_summaries:
             memory_text += "Past days summary: \n" + "\n".join([f"-{s}" for s in ctx.daily_summaries]) + "\n"
@@ -152,11 +155,15 @@ class VillagerAgent:
             {"role": "user", "content": user},
         ]
 
+
+    # Sends the prompt to the API and returns the raw string response.
     def _call_llm(self, messages: List[Dict[str, str]]) -> str:
         if self.llm_client is None:
             raise RuntimeError("No LLM client configured")
         return self.llm_client.chat(messages)
 
+
+    # Converts the raw JSON string from the LLM into an ActionRequest object.
     @staticmethod
     def _parse(raw: str) -> ActionRequest:
         data = json.loads(raw)
@@ -168,7 +175,8 @@ class VillagerAgent:
             journal=str(data.get("journal", "")).strip(),
         )
 
-# Prompt for building a conversation
+
+# Prompt for building a single turn in a conversation between two villagers.
 def building_convo(speaker, listener, history: list[dict], day: int, phase: str, location: str) -> str:
     history_text = "\n".join([f"{h['name']}: {h['line']}" for h in history])
     
@@ -212,6 +220,7 @@ def reflection_symbl(villager) -> str:
 
 # Prompt for daily summary, sent after 1 day
 def daily_summaries(villager, day: int) -> str:
+    # Gather today's conversation and task history
     todays_encounters = [m.summary for m in villager.recent_encounters if m.day == day]
 
     todays_tasks = [t for t in villager.task_history if t.startswith(f"Day {day}:")]
