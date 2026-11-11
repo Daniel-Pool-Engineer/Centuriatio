@@ -1,7 +1,5 @@
 from backend.agent.profile import CITIZEN, FIRST_RESPONDER, ELECTRICIAN, DOCTOR
 
-SHELTER_ID = "school"  # where villagers go during a power outage
-
 # name, home building, color (building ids match backend/map/graph.py)
 STARTING_VILLAGERS = [
     ("m1", "Maria", "home_a", (200, 40, 40), CITIZEN),
@@ -13,6 +11,8 @@ STARTING_VILLAGERS = [
     ("v_felix", "Felix", "home_b", (20, 20, 20), CITIZEN),        # Citizen
 ]
 
+
+# Scripted, non-AI NPCs
 SCRIPTED_NPCS = [
     ("npc_1", "Sam", "home_c", (100, 200, 150)),
     ("npc_2", "Lily", "home_d", (200, 100, 250)),
