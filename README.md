@@ -1,4 +1,4 @@
-# f-AI---Centuriatio
+# Centuriatio
 
 How to Run:
 Download the project and open it in any IDE. Then open a terminal at the root.
