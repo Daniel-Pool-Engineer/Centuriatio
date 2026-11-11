@@ -8,41 +8,46 @@ from backend.agent.agent import building_convo, reflection_symbl
 from backend.simulation_state import MemoryEntry, Villager
 
 class SocialSystem:
+    """Manages background tasks for conversations, daily summaries, and JSON export."""
     def __init__(self, rng, buildings):
         self.rng = rng
         self.buildings = buildings
 
-        #Prevents program crashing capped at 5
+        # Thread pool to handle LLM API calls without freezing the main game loop.
+        # Prevents program crashing capped at 5
         self.executor = ThreadPoolExecutor(max_workers=5)
 
-
+        # Tracks how many conversations are currently running in the background.
         self.active_conversations = 0
 
-        # UI state tracking
+        # UI state tracking for export progress screen.
         self.export_data = None 
         self.export_progress = [] 
         self.is_exporting = False
 
     
     def check_triggers(self, villagers: list[Villager], day: int, is_night: bool):
+        # Do not start new conversations if the user is currently exporting.
         if self.is_exporting:
             return
 
-        # Limit api calls, set to 2 conversations at a time.
+        # Limit to 2 simultaneous conversations at a time to avoid overwhelming the API.
         if self.active_conversations >= 2: 
             return 
 
         # Filter for AI villagers who are standing idle in a building
         idle = [v for v in villagers if not v.is_walking and v.location_id and not v.conversation_partner and not v.is_scripted]
-        
+
+        # Check every pair of idle villagers to see if they are in the same building.
         for i, a in enumerate(idle):
             for b in idle[i+1:]:
                 if a.location_id == b.location_id:
-                    # prevent the same pair from talking repeatedly in one phase
+
+                    # Prevent the same pair from talking repeatedly in one phase
                     phase_key = f"day{day}" if not is_night else f"night{day}"
                     if a.last_spoke_phase.get(b.agent_id) == phase_key: continue
 
-                    #Lock the villagers into a conversation state
+                    #Lock the villagers into a conversation state so they can't start another one.
                     a.conversation_partner = b
                     b.conversation_partner = a
                     a.last_spoke_phase[b.agent_id] = phase_key
@@ -55,14 +60,16 @@ class SocialSystem:
                     return 
 
     def run_convo(self, a: Villager, b: Villager, day: int, is_night: bool):
+        # Runs a turn-by-turn conversation between two villagers in the background.
         try:
             loc_name = self.buildings[a.location_id].display_name if a.location_id else "Unknown"
             history = []
 
-            # Randomize the starter of the conversation
+            # Randomize who starts the conversation.
             speaker, listener = (a, b) if self.rng.random() > 0.5 else (b, a)
             phase_str = "Night" if is_night else "Day"
 
+            # Max 6 turns (3 per person) to prevent infinite loops and save API costs
             for _ in range(6): 
                 prompt = building_convo(speaker, listener, history, day, phase_str, loc_name)
                 try:
@@ -81,13 +88,14 @@ class SocialSystem:
                         break
 
                 except Exception:
+                    # If the LLM fails to respond, log silence and end the chat.
                     history.append({"name": speaker.name, "line": "(remained silent)"})
                     break
 
-                #Swap speaker and listener
+                #Swap speaker and listener for the next turn
                 speaker, listener = listener, speaker
 
-            # Combine the transcript into a single memory string
+            # Combine the full transcript into a single memory string
             convo_text = " | ".join([f"{h['name']}: {h['line']}" for h in history]) if history else "..."
 
             #Write to both Villagers' episodic memory banks
@@ -102,6 +110,7 @@ class SocialSystem:
             self.active_conversations -= 1
 
     def export_now(self, villagers: list[Villager], day: int):
+        # Triggers the final export process. Runs in the background so the UI doesn't freeze.
         if self.is_exporting: return
         self.is_exporting = True
         self.export_progress = [("Waiting for conversations to finish...", "...")]
@@ -134,6 +143,8 @@ class SocialSystem:
                         self.export_progress[-1] = (v.name, "OK")
                     except Exception as e:
                         print(f"[Export] LLM failed for {v.name}: {e}")
+
+                        # Use a fall back reflection if the LLM fails.
                         results[v.agent_id] = {"reflection": "I survived the simulation.", "lessons": []}
                         self.export_progress[-1] = (v.name, "!!")
 
@@ -147,7 +158,7 @@ class SocialSystem:
                 villagers_data = []
                 for v in villagers:
                     if v.agent is None:
-                        continue 
+                        continue  # Skip scripted NPCs
 
                     villagers_data.append({
                         "id": v.agent_id, "name": v.name, "role": v.agent.profile.role,
@@ -166,15 +177,17 @@ class SocialSystem:
                 
             except Exception as e:
                 traceback.print_exc()
-                #Signal failure so the UI doesn't freeze
+                #Signal failure so the UI doesn't freeze on the loading screen.
                 self.export_data = f"ERROR: {e}"
                 
         self.executor.submit(_export_task)
 
 
     def generate_daily_summaries(self, villagers: list[Villager], day: int):
+        # Triggers the nightly memory summary generation for all AI villagers. 
+
         def _summary_task(v):
-            # Wait for active conversations to end 
+            # Wait for active conversations to end so the summary includes all memories.
             start_wait = time.time()
             while self.active_conversations > 0 and time.time() - start_wait < 5:
                 time.sleep(0.1)
@@ -183,7 +196,8 @@ class SocialSystem:
                 # local import
                 from backend.agent.agent import daily_summaries
                 prompt = daily_summaries(v, day)
-                if not prompt: return
+                if not prompt:
+                    return # Skip if they did nothing today.
                 
                 raw = v.agent._call_llm([{"role": "user", "content": prompt}])
                 if "'''json" in raw: raw = raw.split("'''json")[1].split("'''")[0].strip()
