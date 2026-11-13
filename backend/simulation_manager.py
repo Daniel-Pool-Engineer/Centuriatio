@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import math
 import random
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 
 from typing import Any
 from frontend.village.map import Building, VillageMap
@@ -13,6 +16,13 @@ from backend.simulation_state import Villager, FireTruck
 from backend.agent.config import STARTING_VILLAGERS, SCRIPTED_NPCS
 from backend.map.vehicle_navigation import VehicleNetwork
 from backend.social_system import SocialSystem
+
+# Download wordnet and punkt
+try:
+    nltk.data.find('tokenizers/punkt')
+except:
+    nltk.download('punkt')
+    nltk.download('wordnet')
 
 Vec = tuple[float,float]
 
@@ -210,6 +220,61 @@ class VillagerManager:
             
         return messages
 
+    def get_top_memories(self, villager: Villager, current_day: int, is_power_outage: bool)-> list:
+        """Calculates a score for every memory based on Recency, Importance, and Jaccard Similarity (with lemmatization)."""
+
+        if not villager.recent_encounters:
+            return []
+
+        # Initialize the NLTK lemmatizer to reduce words to their root form
+        lemmatizer = WordNetLemmatizer()
+
+        # Define context keywords based on the current crisis state
+        keywords = set()
+        if is_power_outage:
+            keywords.update(["power", "outage", "electricity", "dark", "light", "generator", "repair", "hospital", "medication", "doctor", "medical", "clinic"])
+
+        # Lemmatize the keywords as both nouns (n) and verbs(v)
+        stemmed_keywords = {lemmatizer.lemmatize(k , pos ='n') for k in keywords}
+        stemmed_keywords.update({lemmatizer.lemmatize(k, pos='v') for k in keywords})
+
+        scored_memories = []
+
+        for mem in villager.recent_encounters:
+            # Time Decay: Today = 1.0, Yesterday = 0.5, 2 days ago = 0.33
+            days_old = max(0, current_day - mem.day)
+            recency_score = 1.0 / (days_old + 1)
+
+            # LLM Rating (Importance)
+            importance_score = mem.importance / 10.0
+
+            # Relevance (Keyword Matching)
+            # Checks how many context keywords appear in the memory summary
+            words = word_tokenize(mem.summary.lower())
+            mem_words = {lemmatizer.lemmatize(w, pos='n') for w in words}
+            mem_words.update({lemmatizer.lemmatize(w, pos='v') for w in words})
+            union_words = mem_words.union(stemmed_keywords)
+
+            if len(union_words) > 0:
+                # Jaccard Similarity = (Number of shared words) / (Total number of unique words in both sets)
+                relevance_score = len (mem_words.intersection(stemmed_keywords)) / len (union_words)
+            else:
+                relevance_score = 0.0
+
+            # Total Score 
+            total_score = (1.0 * recency_score) + (1.0 * importance_score) + (1.0 * relevance_score)
+            scored_memories.append((total_score, mem))
+
+        # Sore by highest memory
+        scored_memories.sort(key=lambda x: x[0], reverse=True)
+
+        final_memories = [mem for score, mem in scored_memories if score >= 1.0][:5]
+
+        if not final_memories and scored_memories:
+            final_memories.append(scored_memories[0][1])
+
+        return final_memories
+
     def update_agents(
         self, 
         sim_dt: float, 
@@ -254,10 +319,11 @@ class VillagerManager:
                     messages.append(f"{villager.name}: {log_text}")
 
                     # Save to task history (prevents duplicate consecutive entries)
-                    new_task_string = f"Day {clock.day_number}: {log_text}"
-                    if not villager.task_history or villager.task_history[-1] != new_task_string:
-                        villager.task_history.append(new_task_string)
-
+                    if action.action != villager.previous_action:
+                        villager.task_history.append( f"Day {clock.day_number}: {log_text}")
+                    
+                    villager.previous_action = action.action
+                    
                     # Execute movement based on the AI's decision
                     if action.target_location and action.target_location != villager.location_id:
                         # Move to the requested location
@@ -322,7 +388,7 @@ class VillagerManager:
                         power_on=not is_power_outage, 
                         previous_action=villager.previous_action,
                         parts_arrived=recovery.parts_arrived if recovery is not None and is_power_outage else None,
-                        recent_encounters = villager.recent_encounters[-3:], # Passes the last three memories
+                        recent_encounters=self.get_top_memories(villager, clock.day_number, is_power_outage),
                         daily_summaries = villager.daily_summaries[-2:], # Last 2 days
                     )
                     backend_sim.queue_agent(villager.agent_id, villager.agent, ctx)
