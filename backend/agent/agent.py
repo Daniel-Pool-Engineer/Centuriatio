@@ -195,10 +195,12 @@ def building_convo(speaker, listener, history: list[dict], day: int, phase: str,
     Otherwise, output JSON: {{"line": "Your spoken words", "walk_away": false}}"""
 
 # Prompt for reflection at the end of simulation
-def reflection_symbl(villager) -> str:
+def reflection_symbl(villager, is_power_outage) -> str:
+    crisis_context = "The village just survived a severe, multi-day Power Outage." if is_power_outage else "It was a normal week in the village."
+
     if not villager.recent_encounters:
         return f"""You are {villager.name} ({villager.agent.profile.role}). 
-        You just finished a simulation. You spent the entire time alone.
+        {crisis_context} You spent the entire time alone.
         Write exactly 2 sentences:
         1. How the silence felt.
         2. What you noticed about yourself without others around.
@@ -207,13 +209,15 @@ def reflection_symbl(villager) -> str:
 
     memories = "\n".join([f"- Day {m.day}, {m.phase} at {m.location}: {m.summary}" for m in villager.recent_encounters])
 
-    return f""" You are {villager.name} ({villager.agent.profile.role}). You just finished a simulation. Here is what actually happened to you:
+    return f""" You are {villager.name} ({villager.agent.profile.role}).
+    {crisis_context}
+    Here is what actually happened to you:
     {memories}
-
+    
     Write exactly 2 sentences:
-    1. What you felt at most memorable moment. Name a specific person and place. 
-    2. One thing you now understand about yourself or the village. 
-    Then, provide 1-2 actionable "lessons" for next time (e.g., "Next time, I will go to the school earlier").
+    1. What you felt at the most memorable moment during this time. Name a specific person and place. 
+    2. One thing you now understand about yourself or the village because of this event. 
+    Then, provide 1-2 actionable "lessons" for next time (e.g., "Next time, I will stock more water")
     Do not write a report. Do not use the word "journey".
     Output JSON: {{"reflection": "...", "lessons": ["...", "..."]}}
     """
@@ -238,3 +242,10 @@ def daily_summaries(villager, day: int) -> str:
 
     Output JSON: {{"summary": "your 3 sentence here"}}"""
 
+# Calls on LLM to rate the importance of memory
+def rate_importance_prompt (convo_text: str) -> str:
+    return f"""On a scale of 1 to 10, where 1 is purely mundane (e.g., discussing the weather) and 10 is 
+    extremely critical (e.g., a medical emergency, fixing the power grid, a major argument), rate the importance of the following conversation.
+    Conversation: {convo_text}
+    Output JSON: {{"importance": <integer 1-10>}}
+    """
