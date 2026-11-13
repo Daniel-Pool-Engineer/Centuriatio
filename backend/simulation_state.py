@@ -23,6 +23,7 @@ class MemoryEntry:
     with_ids: list[str]
     summary: str
     outcome: str = "normal"
+    importance: int = 5
 
 
 @dataclass
