@@ -4,7 +4,7 @@ import time
 import traceback
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-from backend.agent.agent import building_convo, reflection_symbl
+from backend.agent.agent import building_convo, reflection_symbl, rate_importance_prompt
 from backend.simulation_state import MemoryEntry, Villager
 
 class SocialSystem:
@@ -76,8 +76,8 @@ class SocialSystem:
                     raw = speaker.agent._call_llm([{"role": "user", "content": prompt}])
 
                     #Cleans up Markdown formatting
-                    if "'''json" in raw: 
-                        raw = raw.split("'''json")[1].split("'''")[0].strip()
+                    if "```json" in raw: 
+                        raw = raw.split("```json")[1].split("```")[0].strip()
                     
                     data = json.loads(raw)
                     line = data.get("line", "...")
@@ -98,9 +98,24 @@ class SocialSystem:
             # Combine the full transcript into a single memory string
             convo_text = " | ".join([f"{h['name']}: {h['line']}" for h in history]) if history else "..."
 
+            # Calculate Importance
+            importance = 5
+
+            try:
+                rate_prompt = rate_importance_prompt(convo_text)
+                raw_rate = a.agent._call_llm([{"role": "user", "content": rate_prompt}])
+                if "```json" in raw_rate:
+                    raw_rate = raw_rate.split("```json")[1].split("```")[0].strip()
+
+                rate_data = json.loads(raw_rate)
+                importance = int (rate_data.get("importance", 5))
+
+            except Exception as e:
+                print(f"[Importance Rating] Failed: {e}")
+
             #Write to both Villagers' episodic memory banks
-            a.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [b.agent_id], f"Conversation with {b.name}: '{convo_text}'"))
-            b.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [a.agent_id], f"Conversation with {a.name}: '{convo_text}'"))
+            a.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [b.agent_id], f"Conversation with {b.name}: '{convo_text}'", importance = importance))
+            b.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [a.agent_id], f"Conversation with {a.name}: '{convo_text}'", importance = importance))
 
         except Exception as e:
             print(f"[SocialSystem] Conversation error: {e}")
@@ -135,7 +150,7 @@ class SocialSystem:
                     # Update the UI progress list
                     self.export_progress.append((v.name, "..."))
                     
-                    prompt = reflection_symbl(v)
+                    prompt = reflection_symbl(v, is_power_outage=True)
                     try:
                         raw = v.agent._call_llm([{"role": "user", "content": prompt}])
                         if "'''json" in raw: raw = raw.split("'''json")[1].split("'''")[0].strip()
