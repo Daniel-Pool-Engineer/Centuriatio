@@ -2,6 +2,7 @@ import json
 import os
 import time
 import traceback
+import threading
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from backend.agent.agent import building_convo, reflection_symbl, rate_importance_prompt
@@ -19,6 +20,9 @@ class SocialSystem:
 
         # Tracks how many conversations are currently running in the background.
         self.active_conversations = 0
+
+        self.convo_event = threading.Event()
+        self.convo_event.set()
 
         # UI state tracking for export progress screen.
         self.export_data = None 
@@ -54,6 +58,7 @@ class SocialSystem:
                     b.last_spoke_phase[a.agent_id] = phase_key
                     
                     self.active_conversations += 1
+                    self.convo_event.clear()
 
                     #Offload the actual LLM chat to the background thread pool
                     self.executor.submit(self.run_convo, a, b, day, is_night)
@@ -124,6 +129,9 @@ class SocialSystem:
             b.conversation_partner = None
             self.active_conversations -= 1
 
+            if self.active_conversations <= 0:
+                self.convo_event.set()
+
     def export_now(self, villagers: list[Villager], day: int):
         # Triggers the final export process. Runs in the background so the UI doesn't freeze.
         if self.is_exporting: return
@@ -132,12 +140,9 @@ class SocialSystem:
         
         def _export_task():
             try:
-                # Giving some time for the simulation to wrap up last minute conversations
-                time.sleep(5)
-                start_drain = time.time()
-                while self.active_conversations > 0 and time.time() - start_drain < 10:
-                    time.sleep(0.1)
-                
+                #Wait up to 10 seconds for active conversations to wrap up before reflecting
+                self.convo_event.wait(timeout=10.0)
+            
                 self.export_progress = []
                 results = {}
 
@@ -153,7 +158,7 @@ class SocialSystem:
                     prompt = reflection_symbl(v, is_power_outage=True)
                     try:
                         raw = v.agent._call_llm([{"role": "user", "content": prompt}])
-                        if "'''json" in raw: raw = raw.split("'''json")[1].split("'''")[0].strip()
+                        if "```json" in raw: raw = raw.split("```json")[1].split("```")[0].strip()
                         results[v.agent_id] = json.loads(raw)
                         self.export_progress[-1] = (v.name, "OK")
                     except Exception as e:
@@ -202,10 +207,8 @@ class SocialSystem:
         # Triggers the nightly memory summary generation for all AI villagers. 
 
         def _summary_task(v):
-            # Wait for active conversations to end so the summary includes all memories.
-            start_wait = time.time()
-            while self.active_conversations > 0 and time.time() - start_wait < 5:
-                time.sleep(0.1)
+            # Wait up to 5 seconds for active conversations to end so the summary includes all memories.
+            self.convo_event.wait(timeout=5.0)
 
             try:
                 # local import
@@ -215,7 +218,7 @@ class SocialSystem:
                     return # Skip if they did nothing today.
                 
                 raw = v.agent._call_llm([{"role": "user", "content": prompt}])
-                if "'''json" in raw: raw = raw.split("'''json")[1].split("'''")[0].strip()
+                if "```json" in raw: raw = raw.split("```json")[1].split("```")[0].strip()
                 data = json.loads(raw)
                 summary = data.get("summary", "")
                 if summary:

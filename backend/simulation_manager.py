@@ -6,7 +6,6 @@ import math
 import random
 import nltk
 from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
 
 from typing import Any
 from frontend.village.map import Building, VillageMap
@@ -17,11 +16,10 @@ from backend.agent.config import STARTING_VILLAGERS, SCRIPTED_NPCS
 from backend.map.vehicle_navigation import VehicleNetwork
 from backend.social_system import SocialSystem
 
-# Download wordnet and punkt
+# Download wordnet for lemmatization
 try:
-    nltk.data.find('tokenizers/punkt')
-except:
-    nltk.download('punkt')
+    nltk.data.find('corpora/wordnet')
+except LookupError:
     nltk.download('wordnet')
 
 Vec = tuple[float,float]
@@ -250,9 +248,8 @@ class VillagerManager:
 
             # Relevance (Keyword Matching)
             # Checks how many context keywords appear in the memory summary
-            words = word_tokenize(mem.summary.lower())
-            mem_words = {lemmatizer.lemmatize(w, pos='n') for w in words}
-            mem_words.update({lemmatizer.lemmatize(w, pos='v') for w in words})
+            words = mem.summary.lower().split()
+            mem_words = {lemmatizer.lemmatize(w) for w in words}
             union_words = mem_words.union(stemmed_keywords)
 
             if len(union_words) > 0:
