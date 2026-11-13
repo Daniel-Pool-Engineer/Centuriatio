@@ -132,7 +132,7 @@ class SocialSystem:
             if self.active_conversations <= 0:
                 self.convo_event.set()
 
-    def export_now(self, villagers: list[Villager], day: int):
+    def export_now(self, villagers: list[Villager], day: int, is_power_outage: bool):
         # Triggers the final export process. Runs in the background so the UI doesn't freeze.
         if self.is_exporting: return
         self.is_exporting = True
@@ -155,7 +155,7 @@ class SocialSystem:
                     # Update the UI progress list
                     self.export_progress.append((v.name, "..."))
                     
-                    prompt = reflection_symbl(v, is_power_outage=True)
+                    prompt = reflection_symbl(v, is_power_outage=is_power_outage)
                     try:
                         raw = v.agent._call_llm([{"role": "user", "content": prompt}])
                         if "```json" in raw: raw = raw.split("```json")[1].split("```")[0].strip()

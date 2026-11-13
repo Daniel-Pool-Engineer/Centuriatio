@@ -209,7 +209,7 @@ def handle_control(name: str) -> None:
     global app_state
     if name == "finish":
         app_state = AppState.EXPORTING
-        villagers.social.export_now(villagers.villagers, sim_clock.day_number)
+        villagers.social.export_now(villagers.villagers, sim_clock.day_number, active_disruption == "Power Outage")
         return
     
     # called by the Freeze / Speed / Reset buttons
