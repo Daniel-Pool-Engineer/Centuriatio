@@ -1,6 +1,6 @@
 agno
 openai
-pygame
 python-dotenv
 pydantic
-pygame
+pygame-ce
+nltk
