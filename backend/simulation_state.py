@@ -24,6 +24,7 @@ class MemoryEntry:
     summary: str
     outcome: str = "normal"
     importance: int = 5
+    lemmatized_text: str= ""
 
 
 @dataclass

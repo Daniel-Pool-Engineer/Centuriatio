@@ -1,12 +1,12 @@
 import json
 import os
-import time
 import traceback
 import threading
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from backend.agent.agent import building_convo, reflection_symbl, rate_importance_prompt
 from backend.simulation_state import MemoryEntry, Villager
+from nltk.stem import WordNetLemmatizer
 
 class SocialSystem:
     """Manages background tasks for conversations, daily summaries, and JSON export."""
@@ -118,9 +118,14 @@ class SocialSystem:
             except Exception as e:
                 print(f"[Importance Rating] Failed: {e}")
 
+            # Precalculate lemmatized text fro Jaccard similarity    
+            lemmatizer = WordNetLemmatizer()
+            words = convo_text.lower().split()
+            lemmatized_words = " ".join([lemmatizer.lemmatize(w) for w in words])
+            
             #Write to both Villagers' episodic memory banks
-            a.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [b.agent_id], f"Conversation with {b.name}: '{convo_text}'", importance = importance))
-            b.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [a.agent_id], f"Conversation with {a.name}: '{convo_text}'", importance = importance))
+            a.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [b.agent_id], f"Conversation with {b.name}: '{convo_text}'", importance = importance, lemmatized_text = lemmatized_words))
+            b.recent_encounters.append(MemoryEntry(day, phase_str, loc_name, [a.agent_id], f"Conversation with {a.name}: '{convo_text}'", importance = importance, lemmatized_text = lemmatized_words))
 
         except Exception as e:
             print(f"[SocialSystem] Conversation error: {e}")

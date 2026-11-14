@@ -239,6 +239,7 @@ class VillagerManager:
         scored_memories = []
 
         for mem in villager.recent_encounters:
+
             # Time Decay: Today = 1.0, Yesterday = 0.5, 2 days ago = 0.33
             days_old = max(0, current_day - mem.day)
             recency_score = 1.0 / (days_old + 1)
@@ -247,9 +248,9 @@ class VillagerManager:
             importance_score = mem.importance / 10.0
 
             # Relevance (Keyword Matching)
-            # Checks how many context keywords appear in the memory summary
-            words = mem.summary.lower().split()
-            mem_words = {lemmatizer.lemmatize(w) for w in words}
+            # Uses the pre-calculated lemmatized text (from SocialSystem) to avoid lag
+            words = mem.lemmatized_text.split() if mem.lemmatized_text else mem.summary.lower().split()
+            mem_words = set(words)
             union_words = mem_words.union(stemmed_keywords)
 
             if len(union_words) > 0:
@@ -262,7 +263,7 @@ class VillagerManager:
             total_score = (1.0 * recency_score) + (1.0 * importance_score) + (1.0 * relevance_score)
             scored_memories.append((total_score, mem))
 
-        # Sore by highest memory
+        # Sort by highest memory
         scored_memories.sort(key=lambda x: x[0], reverse=True)
 
         final_memories = [mem for score, mem in scored_memories if score >= 1.0][:5]
@@ -291,6 +292,8 @@ class VillagerManager:
             villager.decision_cooldown = max(0.0, villager.decision_cooldown - sim_dt)
 
         # Process results from the backend AI
+        # It grabs the data and release the lock immediately. 
+        # pathfinding (send_to) from blocking the background API threads.
         with world_state.lock:
             if world_state.is_data_ready:
                 for v_id, action in world_state.new_actions.items():
