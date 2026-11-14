@@ -25,19 +25,19 @@ except LookupError:
 Vec = tuple[float,float]
 
 class VillagerManager:
-    """moves and draws every villager"""
+    """moves every villager and a fire truck"""
 
     walk_speed = 140.0  # world units per second
 
     def __init__(self, village_map: VillageMap, rng: random.Random | None = None, llm_client: Any = None) -> None:
-        self.network = SidewalkNetwork(village_map) #sidewalk graph for walking routes
+        self.network = SidewalkNetwork(village_map) # sidewalk graph for walking routes
         self.vehicle_network = VehicleNetwork(village_map) # road graph for fire truck
 
         self.buildings = {b.id: b for b in village_map.buildings}
         self.rng = rng or random.Random()
         self.social = SocialSystem(self.rng, self.buildings)
         self.llm_client = llm_client
-        self.power_outage = False #while True, routine sleeping/waking is suppressed
+        self.power_outage = False # while True, routine sleeping/waking is suppressed
         self.is_night = False
 
         # Recovery phase
@@ -48,19 +48,19 @@ class VillagerManager:
         start_road = self.vehicle_network._nearest_road_point(fire_entrance)
         self.fire_truck = FireTruck(position=start_road)
 
-        #Spawn the AI-driven villagers
+        # Spawn the AI-driven villagers
         self.villagers = [
             self._spawn(v_id, name, home_id, color, profile)
             for v_id, name, home_id, color, profile in STARTING_VILLAGERS
         ]
 
-        #Spawn the scripted NPCs (no LLM)
+        # Spawn the scripted NPCs (no LLM)
         for v_id, name, home_id, color in SCRIPTED_NPCS:
             npc = self._spawn(v_id, name, home_id, color, None)
             npc.is_scripted = True
             npc.wait_time = self.rng.uniform(1.0, 5.0)
 
-            #If it's fireman, it will follow Ben
+            # If it's fireman, it will follow Ben
             if "crew" in v_id:
                 npc.following_target="v_ben"
 
@@ -93,7 +93,7 @@ class VillagerManager:
 
     
     def get_villager(self, agent_id: str) -> Villager | None:
-        # Loop up a villager object by their string Id.
+        # Look up a villager object by their string Id.
         for v in self.villagers:
             if v.agent_id == agent_id:
                 return v
@@ -149,7 +149,7 @@ class VillagerManager:
 
 
     def _wake_up(self) -> None:
-        # leave in a few seconds so they don't all walk out at once
+        # Leave in a few seconds so they don't all walk out at once
         for villager in self.villagers:
             villager.wait_time = self.rng.uniform(0.0, 3.0)
 
@@ -163,7 +163,7 @@ class VillagerManager:
 
 
     def _walk(self, villager: Villager, dt: float) -> bool:
-        # move along the waypoints, returns True when the trip is finished
+        # Move along the waypoints, returns True when the trip is finished
         distance = self.walk_speed * dt
         while villager.waypoints and distance > 0:
             (target_x, target_y), sidewalk_id = villager.waypoints[0]
@@ -263,7 +263,7 @@ class VillagerManager:
             total_score = (1.0 * recency_score) + (1.0 * importance_score) + (1.0 * relevance_score)
             scored_memories.append((total_score, mem))
 
-        # Sort by highest memory
+        # Sort by highest score
         scored_memories.sort(key=lambda x: x[0], reverse=True)
 
         final_memories = [mem for score, mem in scored_memories if score >= 1.0][:5]
@@ -292,8 +292,8 @@ class VillagerManager:
             villager.decision_cooldown = max(0.0, villager.decision_cooldown - sim_dt)
 
         # Process results from the backend AI
-        # It grabs the data and release the lock immediately. 
-        # pathfinding (send_to) from blocking the background API threads.
+        # It grabs the data and release the lock. 
+        # Pathfinding (send_to) from blocking the background API threads.
         with world_state.lock:
             if world_state.is_data_ready:
                 for v_id, action in world_state.new_actions.items():
@@ -301,7 +301,7 @@ class VillagerManager:
                     if villager is None:
                         continue
 
-                    # Check if the power is restored
+                    # Check if the power can be restored
                     if action.action == "restore_power" and recovery is not None and is_power_outage:
                         if recovery.restore_possible(villager.location_id or ""):
                             self.restore_requested = True
@@ -344,7 +344,7 @@ class VillagerManager:
                         and villager.agent.profile.role == "first_responder"
                         and villager.location_id != "school"
                     ): 
-                        #First responder with no explicit destination; patrol random building.
+                        # First responder with no explicit destination; patrol random building.
                         choices = [b for b in self.buildings if b != villager.location_id]
                         next_patrol = self.rng.choice(choices)
                         try:
@@ -398,7 +398,7 @@ class VillagerManager:
         return messages
 
     def update(self, dt: float, day:int, is_night: bool) -> list[str]:
-        """move villagers, returns journal messages for anything that happened"""
+        """moves villagers and the fire truck"""
         messages: list[str] = []
 
         # Fire truck movement
@@ -466,7 +466,7 @@ class VillagerManager:
                     self.send_to(villager, target.location_id)
 
             if villager.is_walking:
-                # Stop at the crosswalk if the truck is coming
+                # Stop at the crosswalk if the truck is on the crosswalk
                 if self.traffic(villager, dt):
                     continue
                 if self._walk(villager, dt):
