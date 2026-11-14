@@ -1,6 +1,6 @@
 from backend.agent.profile import CITIZEN, FIRST_RESPONDER, ELECTRICIAN, DOCTOR
 
-# name, home building, color (building ids match backend/map/graph.py)
+# villager id, name, home building, color, profile (building ids match backend/map/graph.py)
 STARTING_VILLAGERS = [
     ("m1", "Maria", "home_a", (200, 40, 40), CITIZEN),
     ("v_ana", "Dr. Ana", "home_a", (220, 60, 60), DOCTOR),        # Doctor
