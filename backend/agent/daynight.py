@@ -3,7 +3,7 @@ from typing import Tuple, List
 class Clock:
     """ Manages the simulation time and tracks the Day/Night cycle."""
 
-    # 1 min for day, 30 min for night (in seconds)
+    # 1 min for day, 30 seconds for night
     day_length = 60
     night_length = 30
 
@@ -77,10 +77,10 @@ class Clock:
         progress = self.time_passed / self.day_night_len
         passed = int(progress * 12 * 60)
         minutes = start + passed
+        # Wrap around midnight.
         if minutes >= 24*60:
             minutes -= 24*60
 
-        # Wrap aroung midnight.
         hours = minutes // 60
         left_over_min = minutes % 60
 
