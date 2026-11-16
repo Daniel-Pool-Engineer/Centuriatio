@@ -65,7 +65,7 @@ Smallville evaluated agents via manual human observation and qualitative intervi
 ## Installation & Setup
 ### 0. Navigator API Key
 Generate API Key via Navigator
-
+[Visible Link Text](https://navigator.ai.ufl.edu/ai-services/navigator-ai-toolkit/)
 ### 1. Requirements
 ```bash
 pip install -r requirements.txt
