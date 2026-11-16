@@ -1,3 +1,4 @@
+![Project Screenshot](/frontend/assets/project.png)
 # Centuriatio: An Adapted Generative Agent Architecture for Urban Crisis Simulation
 **Team Name:** f'(ai)
 
