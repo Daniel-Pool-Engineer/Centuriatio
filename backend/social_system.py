@@ -173,6 +173,41 @@ class SocialSystem:
                         results[v.agent_id] = {"reflection": "I survived the simulation.", "lessons": []}
                         self.export_progress[-1] = (v.name, "!!")
 
+                # Calculating Network Density
+                # Equation: D = 2|E| / |V|(|V|-1)
+
+                ai_villagers = [v for v in villagers if v.agent is not None]
+                num_nodes = len(ai_villagers)
+
+                unique_edges = set()
+                isolated_count = 0
+                cross_role_interactions = 0
+
+                for v in ai_villagers:
+                    # Count isolated agents
+                    if not v.recent_encounters:
+                        isolated_count += 1
+
+                    for encounter in v.recent_encounters:
+                        # Sort the tuple so (A, B) and (B,A) as the same edge
+                        for partner_id in encounter.with_ids:
+                            edge = tuple(sorted([v.agent_id, partner_id]))
+                            unique_edges.add(edge)
+
+                num_edges = len(unique_edges)
+
+                if num_nodes >1:
+                    network_density = (2* num_edges) / (num_nodes * (num_nodes-1))
+                else:
+                    network_density = 0.0
+
+                for edge in unique_edges:
+                    v1 = next((v for v in ai_villagers if v.agent_id == edge[0]), None)
+                    v2 = next((v for v in ai_villagers if v.agent_id == edge[1]), None)
+                    if v1 and v2:
+                        if v1.agent.profile.role != v2.agent.profile.role:
+                            cross_role_interactions += 1
+
 
                 #JSON Assembly phase
                 self.export_progress.append(("Writing file...", "..."))
@@ -194,8 +229,18 @@ class SocialSystem:
                         "encounters": [{"day": m.day, "location": m.location, "summary": m.summary} for m in v.recent_encounters]
                     })
                     
-                with open(filepath, "w", encoding="utf-8") as f:
-                    json.dump({"meta": {"timestamp": timestamp, "day": day}, "villagers": villagers_data}, f, indent=4)
+                meta_data = {
+                    "timestamp": timestamp,
+                    "day": day,
+                    "social_metrics": {
+                        "network_density": round(network_density, 3),
+                        "total_unique_connections": num_edges,
+                        "isolated_villagers_count": isolated_count,
+                        "cross_role_coordination_events": cross_role_interactions
+                    }
+                }
+
+                with open(filepath, "w", encoding="utf-8") as f: json.dump({"meta": meta_data, "villagers": villagers_data}, f, indent=4)
 
                 # Signal file is ready
                 self.export_data = filepath

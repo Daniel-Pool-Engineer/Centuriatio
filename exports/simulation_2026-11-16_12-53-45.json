@@ -1,0 +1,695 @@
+{
+    "meta": {
+        "timestamp": "2026-11-16_12-53-45",
+        "day": 4,
+        "social_metrics": {
+            "network_density": 0.667,
+            "total_unique_connections": 14,
+            "isolated_villagers_count": 0,
+            "cross_role_coordination_events": 9
+        }
+    },
+    "villagers": [
+        {
+            "id": "m1",
+            "name": "Maria",
+            "role": "citizen",
+            "reflection": "During the thunderstorm night at Home A, I felt a mix of fear and comfort as Felix lit candles and we waited together. I now understand that relying on each other during emergencies strengthens both my sense of safety and the village's resilience.",
+            "lessons": [
+                "Next time, I will keep an emergency kit with flashlights, batteries, and water readily accessible.",
+                "Next time, I will check the generator fuel and test it before any forecasted storm."
+            ],
+            "daily_summaries": [
+                "Day 1: I went to Dr. Ana for my check-up, where she took my blood pressure, and then I checked office supplies and conserved energy by turning off nonessential devices. I met Diego for a coffee break in the break room, discussed the budget report with him, and later helped Elena gather sales figures for her report. I spoke with Carla the electrician about the flickering kitchen light, learned the breaker panel is in the basement, went home to check my emergency supplies, and stayed inside after dark using flashlights during the outage.",
+                "Day 2: I noticed hallway lights flickering, asked Carla to check, and chatted with Felix about my shift. I went to the electrical plant to inquire about power restoration and turned off nonessential devices there to conserve energy. I returned home to check my emergency supplies and stayed indoors to conserve resources while waiting for daylight.",
+                "Day 3: I turned off all nonessential devices to conserve energy while staying home. I checked my emergency supplies to make sure I had enough food and water. I remained indoors, conserved resources, waited for daylight, and inspected my supplies by flashlight."
+            ],
+            "task_history": [
+                "Day 1: Going to the office to start work for the day.",
+                "Day 1: Checking supplies in the office to see what I have during the outage.",
+                "Day 1: Conserving energy by turning off nonessential devices.",
+                "Day 1: Going to the electrical plant to ask when power will be restored.",
+                "Day 1: Going home to check my emergency supplies.",
+                "Day 1: Conserving electricity by turning off nonessential devices and using flashlights.",
+                "Day 1: Staying home after dark to stay safe during the outage.",
+                "Day 1: Checking emergency supplies at home to prepare for the outage.",
+                "Day 1: It's night during the outage, so I'm staying home to stay safe.",
+                "Day 1: Checking supplies at home to prepare for the outage.",
+                "Day 1: Conserving supplies to make them last through the outage.",
+                "Day 1: It's night and unsafe to go out during the outage, so I remain at home.",
+                "Day 2: Conserving energy.",
+                "Day 2: Going to the electrical plant to ask when power will be restored.",
+                "Day 2: Conserving energy by turning off nonessential devices at the electrical site.",
+                "Day 2: Going home to check emergency supplies.",
+                "Day 2: Staying indoors to conserve resources and wait for daylight.",
+                "Day 2: I checked my emergency supplies and made sure flashlights have batteries.",
+                "Day 2: Staying at home to conserve energy and wait out the power to return.",
+                "Day 2: Checking my emergency supplies to ensure I have enough flashlights and batteries.",
+                "Day 2: Staying indoors after dark to conserve resources during the outage.",
+                "Day 2: Turning off nonessential devices to conserve power during the night outage.",
+                "Day 2: Staying indoors to conserve resources and wait for daylight.",
+                "Day 2: Continuing to conserve resources indoors during the outage.",
+                "Day 2: Staying at home to wait for daylight.",
+                "Day 3: I will conserve energy by turning off nonessential devices while staying home.",
+                "Day 3: I check my emergency supplies to ensure I have enough food and water.",
+                "Day 3: Staying indoors to conserve resources and wait for daylight.",
+                "Day 3: I check my emergency supplies by flashlight.",
+                "Day 3: It's night, so I remain at home to rest.",
+                "Day 3: I checked my emergency supplies to ensure they're ready.",
+                "Day 3: Staying home for the night as it's dark and power is stable.",
+                "Day 3: I will turn off nonessential lights to save energy tonight.",
+                "Day 3: Staying indoors to rest through the night.",
+                "Day 3: I checked my emergency supplies to ensure I have enough food and water.",
+                "Day 3: Staying home to rest for the night.",
+                "Day 3: Resting at home to recover for tomorrow.",
+                "Day 3: Choosing to stay home for the night as power is stable.",
+                "Day 4: Conserving energy by keeping lights off and using minimal power."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Dr. Ana: 'Maria: Good morning, Dr. Ana. How are you today? | Dr. Ana: I'm doing well, thank you. And how are you today, Maria? | Maria: I'm doing great, thanks! Just came in for my check-up. | Dr. Ana: All right, Maria, let's begin your check-up. | Maria: Sure, please go ahead and check my blood pressure. | Dr. Ana: Okay, let's start with the blood pressure cuff. Please roll up your sleeve.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Office",
+                    "summary": "Conversation with Diego: 'Diego: Hey Maria, how\u2019s your day going so far? | Maria: It's going pretty well, thanks! Just wrapped up a quick meeting and now I'm catching up on emails. | Diego: Sounds good! I just finished the budget report and grabbed a coffee. Want to grab a quick break later? | Maria: Sure, I'd love a break. How about we meet in the break room in ten minutes? | Diego: Great, see you in ten! | Maria: See you then! I'll save us a spot.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Office",
+                    "summary": "Conversation with Elena: 'Elena: Hey Maria, how's your day going? Anything interesting happen at the office today? | Maria: Hey Elena, it's been quiet so far\u2014just catching up on emails. How about you? | Elena: Not much, just wrapped up the quarterly report. How's yours going? | Maria: Mine's still in progress, just need a few more data points before I can finish. How did yours turn out? | Elena: It went well\u2014I got positive feedback on the report. Do you need any help gathering those data points for yours? | Maria: Thanks, Elena\u2014maybe just the sales figures from last month? I could use a hand if you're free.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Carla: Hey Maria, I'm Carla, the electrician. How can I help you today? | Maria: Hi Carla, I've noticed the kitchen light has been flickering lately. Could you take a look at it for me? | Carla: Sure thing, let me check the kitchen light first. | Maria: Thanks, Carla. Let me know if you need any access to the breaker panel while you\u2019re looking at it. | Carla: Sure, I\u2019ll need to check the breaker panel\u2014could you show me where it is? | Maria: The breaker panel is in the basement, near the water heater.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Felix: 'Felix: Hey Maria, did you hear that thunder? It's really loud tonight. | Maria: Yeah, it\u2019s shaking the windows. Hope it passes soon. | Felix: Yeah, sounds like a storm rolling in. Let's hope it doesn't knock the power out. | Maria: Yeah, I hope the lights stay on. Maybe we should grab some candles just in case. | Felix: Good idea, I'll grab some candles from the kitchen just in case. | Maria: Thanks, Felix. Let's hope it's just a brief rumble.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Diego: 'Diego: Hey Maria, how are you holding up tonight? | Maria: I'm holding up okay, just trying to stay calm. How are you doing, Diego? | Diego: I'm trying to stay positive too; we'll get through this together. | Maria: I'm glad we can support each other. Let's try to get some rest. | Diego: Alright, let's both try to relax and get some sleep. Good night, Maria. | Maria: Good night, Diego.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Elena: 'Maria: Hey Elena, did you hear about the storm coming tonight? | Elena: Yeah, I heard the forecast. Hope we're prepared. | Maria: I'm worried the storm might knock out the power. Do we have enough flashlights and batteries? | Elena: I've got a couple of flashlights and extra batteries in the kitchen. We should be okay for now. | Maria: Thanks, Elena. Let's also check the candles and make sure the generator has fuel. | Elena: I'll check the candles and make sure the generator has enough fuel.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Maria: Hey Carla, the hallway lights have been flickering all morning. Could you take a look when you have a moment? | Carla: Sure thing, I'll check the hallway lights right now. | Maria: Thanks, Carla. Let me know if you need any help. | Carla: Heading to the hallway now, I'll let you know what I find. | Maria: Alright, thanks Carla. Just shout if you need a hand. | Carla: I found a loose connection in the junction box; I'm tightening it now.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Felix: 'Felix: Hey Maria, how's your shift going? | Maria: It's been busy but manageable. Thanks for asking! | Felix: Glad to hear it. Anything interesting happening on the floor? | Maria: Just a couple of minor wiring hiccups, but nothing we can't handle. | Felix: Hope everything stays smooth\u2014let me know if you need an extra hand. | Maria: Thanks, Felix! I'll let you know if I need an extra hand.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Home A",
+                    "summary": "Conversation with Felix: 'Maria: Hey Felix, how's your night going? Anything interesting happen today? | Felix: Not much, just enjoying the quiet night. You? | Maria: Just got back from the market, found some fresh bread. How about you? | Felix: It's been peaceful, just listening to the night sounds. That bread sounds great\u2014did you get anything else tasty? | Maria: Yeah, I also grabbed some cheese and a few apples\u2014nothing fancy, but it\u2019ll make a nice snack. | Felix: That sounds delicious\u2014maybe we could share a bite?'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home A",
+                    "summary": "Conversation with Felix: 'Maria: Hey Felix, how's your day going? | Felix: Hey Maria! I'm doing well. How's your day? | Maria: It's going fine, just finished some chores. How about you? | Felix: Just relaxing at home, maybe later I'll head to the park. How about you, any plans? | Maria: I'm thinking of taking a walk later too\u2014maybe we could meet up at the park? | Felix: Sounds great! Let's meet at the park in an hour.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home A",
+                    "summary": "Conversation with Dr. Ana: 'Dr. Ana: Good evening, Maria. How are you feeling tonight? | Maria: I'm feeling okay, just a little tired tonight. | Dr. Ana: I understand. If anything changes, please let me know right away. | Maria: Thank you, Doctor. I'll let you know if anything changes. | Dr. Ana: Get some rest, and if you need anything, just call. | Maria: I will, thank you.'"
+                },
+                {
+                    "day": 4,
+                    "location": "Home A",
+                    "summary": "Conversation with Dr. Ana: 'Maria: Hi Dr. Ana, how are you today? | Dr. Ana: I'm doing well, thank you. How can I help you today? | Maria: I've been feeling a bit dizzy lately; could you check my blood pressure, please? | Dr. Ana: Sure, let me take your blood pressure now. Please sit down and relax. | Maria: Okay, I'm sitting down now. Thanks. | Dr. Ana: Okay, I'll inflate the cuff now; just relax.'"
+                }
+            ]
+        },
+        {
+            "id": "v_ana",
+            "name": "Dr. Ana",
+            "role": "doctor",
+            "reflection": "During the night at the hospital, I felt a surge of adrenaline and fear as Ben reported the patient's vitals dropping rapidly. I now understand that my ability to stay focused under pressure is vital for the village's trust in me.",
+            "lessons": [
+                "Next time, I will check and restock the crash cart before each shift.",
+                "Next time, I will schedule brief emergency response drills with Ben and the staff."
+            ],
+            "daily_summaries": [
+                "Day 1: I arrived at the hospital in the morning to start my shift and immediately checked the backup power and generator to keep critical systems running. During the afternoon I moved and secured all medications into backup\u2011powered storage to protect them from possible spoilage during an outage. In the evening I verified that the medication storage remained on backup power, completed my rounds, and then concluded my workday.",
+                "Day 2: I checked the hospital backup power generator and verified that medication storage remained on backup power in the morning. In the afternoon, I moved medications to backup-powered storage and turned off non-essential equipment to conserve backup power. I stayed at the hospital to monitor patients overnight and continued checking backup power status throughout the evening.",
+                "Day 3: In the morning I remained at the hospital to monitor patients during the power outage. In the afternoon I checked the backup power generator to ensure critical systems stayed operational and turned off non\u2011essential equipment to conserve power. In the evening I continued to stay at the hospital, monitoring patients until the outage was resolved."
+            ],
+            "task_history": [
+                "Day 1: Going to the hospital to start work.",
+                "Day 1: Checking hospital backup power to ensure critical systems stay online.",
+                "Day 1: Moving medication to secure storage to prevent spoilage during outage.",
+                "Day 1: Checking the hospital's backup generator to ensure critical systems stay powered.",
+                "Day 1: Protecting medication from spoilage during the outage.",
+                "Day 1: Checking the hospital's backup generator to ensure critical systems stay powered.",
+                "Day 1: Securing medication to prevent spoilage during the outage.",
+                "Day 1: Checking the hospital's backup power to ensure critical systems stay online.",
+                "Day 1: Securing medicines to prevent spoilage during outage.",
+                "Day 1: Checking hospital backup generator to ensure critical systems remain operational.",
+                "Day 1: Confirming medication storage is on backup power.",
+                "Day 1: Checking the hospital backup power status.",
+                "Day 1: Protecting medication from power outage effects.",
+                "Day 1: Checking hospital backup power status.",
+                "Day 1: Protecting medication from power outage effects.",
+                "Day 1: Checking the hospital backup power.",
+                "Day 1: Reducing non-essential power use to preserve backup generator.",
+                "Day 2: Monitoring patients overnight during the power outage.",
+                "Day 2: Checking the hospital backup power to ensure critical systems remain operational.",
+                "Day 2: Verifying medication storage remains on backup power to prevent spoilage.",
+                "Day 2: Checking the hospital backup power generator to ensure critical systems remain operational.",
+                "Day 2: Verifying medication storage remains on backup power.",
+                "Day 2: Checking the hospital backup power generator status.",
+                "Day 2: Securing medications in backup-powered storage to prevent spoilage.",
+                "Day 2: Checking backup power and generator status.",
+                "Day 2: Moving medications to backup-powered storage to prevent spoilage.",
+                "Day 2: Checking the hospital backup generator to ensure critical systems remain powered.",
+                "Day 2: Turning off non-essential equipment to conserve backup power.",
+                "Day 2: Moving medications to backup-powered storage to prevent spoilage during the outage.",
+                "Day 2: Checking hospital backup power to ensure critical systems remain operational.",
+                "Day 2: Ensuring all medications remain on backup-powered storage to prevent spoilage.",
+                "Day 2: Checking the backup power generator to ensure critical systems stay online.",
+                "Day 2: Staying at the hospital to monitor patients during the outage.",
+                "Day 2: Checking backup power to ensure critical systems remain operational.",
+                "Day 2: Moving medications to backup-powered storage to prevent spoilage.",
+                "Day 2: Checking hospital backup generator to ensure critical systems stay online.",
+                "Day 2: Remaining at the hospital to monitor patients overnight during the outage.",
+                "Day 2: Checking hospital backup power generator status.",
+                "Day 2: I will stay at the hospital to monitor patients throughout the night.",
+                "Day 2: Turning off non-essential lights and equipment to conserve backup power.",
+                "Day 2: Remaining at hospital to monitor patients and backup power during the outage.",
+                "Day 2: Checking the hospital backup generator to ensure it remains operational.",
+                "Day 3: Remaining at the hospital to monitor patients during the outage.",
+                "Day 3: Checking the hospital backup power generator to ensure critical systems remain operational.",
+                "Day 3: Turning off non-essential equipment to conserve backup power.",
+                "Day 3: Staying at the hospital to monitor patients during the outage.",
+                "Day 3: Returning home after my shift at the hospital ends.",
+                "Day 3: Resting at home for the night.",
+                "Day 3: Updating patient records from home.",
+                "Day 3: Returning home after night shift as power is restored and no crisis.",
+                "Day 3: Resting at home for the night.",
+                "Day 3: Going home to rest after night shift.",
+                "Day 3: Resting at home after a normal day.",
+                "Day 3: Going home to rest after the power outage resolution.",
+                "Day 4: Resting at home overnight with power on and no urgent cases."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Maria: Good morning, Dr. Ana. How are you today? | Dr. Ana: I'm doing well, thank you. And how are you today, Maria? | Maria: I'm doing great, thanks! Just came in for my check-up. | Dr. Ana: All right, Maria, let's begin your check-up. | Maria: Sure, please go ahead and check my blood pressure. | Dr. Ana: Okay, let's start with the blood pressure cuff. Please roll up your sleeve.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Hospital",
+                    "summary": "Conversation with Ben: 'Ben: Hi Dr. Ana, I just brought in the patient from the ambulance. How are they doing? | Dr. Ana: They're stable for now, but we need to get them to the ICU right away. | Ben: Understood, I'll help get them transferred. Let me know if you need anything. | Dr. Ana: Thanks, Ben. Please keep an eye on their vitals while we get the ICU bed ready. | Ben: I'll keep a close watch on their vitals and alert you immediately if anything changes. | Dr. Ana: Appreciate it, Ben. Let's move as soon as the ICU bed is ready.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Hospital",
+                    "summary": "Conversation with Ben: 'Ben: Hey Dr. Ana, I just brought in the patient from the ambulance; their vitals are dropping fast. | Dr. Ana: What are the current vitals? Let's get them on the monitor and start resuscitation. | Ben: Blood pressure is 80 over 45, heart rate 130, SpO2 88% on room air, and they're losing consciousness. | Dr. Ana: Let's start a rapid fluid bolus and prepare for endotracheal intubation; can you call the code team and get the crash cart ready? | Ben: I'm calling the code team now and have someone bringing the crash cart. | Dr. Ana: Start chest compressions now and give 1 mg epinephrine IV; I'll secure the airway once the tube is ready.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Dr. Ana: Good evening, Maria. How are you feeling tonight? | Maria: I'm feeling okay, just a little tired tonight. | Dr. Ana: I understand. If anything changes, please let me know right away. | Maria: Thank you, Doctor. I'll let you know if anything changes. | Dr. Ana: Get some rest, and if you need anything, just call. | Maria: I will, thank you.'"
+                },
+                {
+                    "day": 4,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Maria: Hi Dr. Ana, how are you today? | Dr. Ana: I'm doing well, thank you. How can I help you today? | Maria: I've been feeling a bit dizzy lately; could you check my blood pressure, please? | Dr. Ana: Sure, let me take your blood pressure now. Please sit down and relax. | Maria: Okay, I'm sitting down now. Thanks. | Dr. Ana: Okay, I'll inflate the cuff now; just relax.'"
+                }
+            ]
+        },
+        {
+            "id": "v_ben",
+            "name": "Ben",
+            "role": "first_responder",
+            "reflection": "During the night when the patient's vitals plummeted in the hospital emergency bay, I felt a surge of adrenaline and fear as Dr. Ana called for the code team. I now understand that staying composed and trusting my teammates can turn a crisis into a coordinated rescue, revealing both my own resilience and the village's reliance on swift, collective action.",
+            "lessons": [
+                "Next time, I will verify that the crash cart is fully stocked and immediately accessible before each shift.",
+                "Next time, I will practice clear, concise communication during emergencies to reduce hesitation."
+            ],
+            "daily_summaries": [
+                "Day 1: I started my day working at the fire station, responding to calls and maintaining equipment. After the morning shift, I went to the hospital to assist with the power outage, then visited home_a to check on residents needing help. I returned to the hospital later in the evening to support Dr. Ana with the patient transfer and monitor vitals until the ICU bed was ready.",
+                "Day 2: In the morning, I arrived at home_b and began checking each residence for residents who needed assistance during the power outage. In the afternoon, I helped set up temporary lighting, distributed bottled water, and assisted elderly residents with charging their medical devices using portable generators. In the evening, I conducted a final walkthrough to ensure all residents were safe, recorded any outstanding needs, and then returned to the station to end my shift.",
+                "Day 3: In the morning, I woke up, grabbed my emergency kit, and headed to home_b to check on the residents. During the afternoon, I walked through each apartment, making sure everyone had flashlights, water, and that the generators were running if available. By evening, I had finished my rounds, reported any issues to the coordinator, and returned to the shelter to rest."
+            ],
+            "task_history": [
+                "Day 1: Working at the fire station.",
+                "Day 1: Going to the hospital to see if residents need assistance during the outage.",
+                "Day 1: Going to home_a to check on residents needing assistance.",
+                "Day 1: Going to the hospital to see if anyone needs assistance during the outage.",
+                "Day 2: Patrolling home_b to check on residents during the power outage.",
+                "Day 2: Checking on residents at home_b for any assistance needed during the power outage.",
+                "Day 2: Going to home_b to check on residents during the power outage.",
+                "Day 2: Checking home_b for residents needing help during the power outage.",
+                "Day 3: Going to home_b to check on residents during the power outage."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Hospital",
+                    "summary": "Conversation with Dr. Ana: 'Ben: Hi Dr. Ana, I just brought in the patient from the ambulance. How are they doing? | Dr. Ana: They're stable for now, but we need to get them to the ICU right away. | Ben: Understood, I'll help get them transferred. Let me know if you need anything. | Dr. Ana: Thanks, Ben. Please keep an eye on their vitals while we get the ICU bed ready. | Ben: I'll keep a close watch on their vitals and alert you immediately if anything changes. | Dr. Ana: Appreciate it, Ben. Let's move as soon as the ICU bed is ready.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Hospital",
+                    "summary": "Conversation with Dr. Ana: 'Ben: Hey Dr. Ana, I just brought in the patient from the ambulance; their vitals are dropping fast. | Dr. Ana: What are the current vitals? Let's get them on the monitor and start resuscitation. | Ben: Blood pressure is 80 over 45, heart rate 130, SpO2 88% on room air, and they're losing consciousness. | Dr. Ana: Let's start a rapid fluid bolus and prepare for endotracheal intubation; can you call the code team and get the crash cart ready? | Ben: I'm calling the code team now and have someone bringing the crash cart. | Dr. Ana: Start chest compressions now and give 1 mg epinephrine IV; I'll secure the airway once the tube is ready.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Ben: Hey Carla, I noticed a flickering light in the corridor\u2014could you take a look at it? | Carla: Sure thing, I'll head over and see what's causing the flicker. | Ben: Thanks, Carla. Let me know if you find anything odd. | Carla: I checked the corridor light; the bulb's loose. I'll tighten it now. | Ben: Thanks, Carla. Let me know if anything else looks off. | Carla: All set, the light should be steady now. Let me know if you need anything else.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Diego: 'Ben: Hey Diego, everything alright? Need any assistance with the electrical setup? | Diego: Everything's fine, just double-checking the connections. Thanks for asking. | Ben: No problem, just let me know if anything looks off. | Diego: All good on my end; I'll let you know right away if I see anything odd. | Ben: Alright, Diego. I'll be nearby if you need anything else. | Diego: Thanks, Ben. I\u2019ll keep an eye on the connections and shout if anything looks off.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home B",
+                    "summary": "Conversation with Carla: 'Ben: Hey Carla, thanks for coming out. I've noticed the lights in the kitchen keep flickering. | Carla: Sure thing, Ben. Let\u2019s start by checking the switch and the circuit breaker for any loose connections. | Ben: Sounds good. Let's start with the switch\u2014do you need any tools from me? | Carla: I\u2019m good for now, just a screwdriver if you have one handy. Let\u2019s pop the switch cover and see what\u2019s up. | Ben: Here's a screwdriver for you. | Carla: Alright, let\u2019s take off the switch cover and see if any wires are loose or corroded.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home B",
+                    "summary": "Conversation with Felix: 'Ben: Hey Felix, Ben here. Just doing a nightly check\u2014everything alright? | Felix: Yeah, all good. Just trying to get some rest. | Ben: Alright, just wanted to make sure you're settling in okay. Let me know if you need anything. | Felix: Thanks, Ben. Good night.'"
+                }
+            ]
+        },
+        {
+            "id": "v_carla",
+            "name": "Carla",
+            "role": "electrician",
+            "reflection": "I felt a surge of relief when I tightened the loose switch in Felix's kitchen on Day 1, seeing the flicker stop instantly. I realized how much the villagers trust me to keep their homes safe, and that my careful checks prevent bigger hazards.",
+            "lessons": [
+                "Next time, I will carry a spare set of screwdrivers and wire nuts for quick fixes.",
+                "Next time, I will schedule a brief safety briefing with residents before starting work to set expectations."
+            ],
+            "daily_summaries": [
+                "Day 1: In the morning I helped Felix tighten a loose kitchen switch, then visited Maria to locate her breaker panel in the basement, and stopped by Diego\u2019s apartment to inspect his living\u2011room wiring. In the afternoon I went to the electrical plant, inspected it for faults, ordered replacement parts, and checked whether they had arrived. In the evening I continued inspecting the plant for outage causes, verified supplies, and confirmed the ordered parts were ready for installation.",
+                "Day 2: I started my morning by helping Maria with the hallway lights, finding and tightening a loose connection in the junction box. In the afternoon I inspected the wiring near the reactor as Elena requested, checking for any faults that could cause the flicker. Later, while waiting for the replacement part to arrive I repeatedly checked supplies, and once it was delivered I restored power to the village.",
+                "Day 3: I secured the repair site and monitored the area while waiting for the replacement part to arrive. When the part arrived in the afternoon, I inspected it and prepared the installation. In the evening, I restored power to the village by installing the part and testing the circuits."
+            ],
+            "task_history": [
+                "Day 1: Going to the electrical plant to start work.",
+                "Day 1: Inspecting the electrical plant for faults.",
+                "Day 1: Ordering the needed replacement part for the electrical plant.",
+                "Day 1: Checking if the ordered replacement parts have arrived.",
+                "Day 1: Inspecting the electrical plant for faults causing the outage.",
+                "Day 1: Checking if the replacement part has arrived.",
+                "Day 1: Inspecting the plant for faults causing the outage.",
+                "Day 1: Checking supplies for the needed replacement part.",
+                "Day 1: Ordering the needed replacement part for the electrical plant.",
+                "Day 1: Checking if the replacement parts have arrived.",
+                "Day 1: Inspecting the plant for faults.",
+                "Day 1: Checking supplies for the needed replacement part.",
+                "Day 1: Inspecting the electrical plant for failures causing the outage.",
+                "Day 1: Ordering replacement parts for the electrical plant.",
+                "Day 1: Checking if the ordered replacement parts have arrived.",
+                "Day 1: Inspecting the electrical plant for faults causing the outage.",
+                "Day 1: Ordering the needed replacement parts for the repaired circuit.",
+                "Day 1: Checking if the ordered replacement parts have arrived.",
+                "Day 1: Keeping the repair area safe while waiting for the replacement part.",
+                "Day 1: Checking if the replacement parts have arrived.",
+                "Day 1: Keeping the repair area safe while waiting for parts.",
+                "Day 1: Checking if the replacement part has arrived.",
+                "Day 1: Staying at the electrical plant to wait for the replacement part and keep the area safe.",
+                "Day 1: Restoring power as replacement parts have arrived and are ready for installation.",
+                "Day 2: Checking if the replacement parts have arrived at the electrical plant.",
+                "Day 2: Inspecting the electrical plant for any fault causing the outage.",
+                "Day 2: Checking if the replacement part has arrived.",
+                "Day 2: Waiting for the replacement part to arrive at the electrical plant.",
+                "Day 2: Checking if the replacement part has arrived at the electrical plant.",
+                "Day 2: Inspecting wiring near the reactor as requested by Elena.",
+                "Day 2: Checking supplies to see if the replacement part has arrived.",
+                "Day 2: Inspecting the electrical plant for any additional faults while waiting for the replacement part.",
+                "Day 2: Checking supplies to see if the replacement part has arrived.",
+                "Day 2: Inspecting the electrical plant for any additional faults while waiting for the replacement part.",
+                "Day 2: Checking if the ordered replacement part has arrived at the plant.",
+                "Day 2: Keeping the repair area safe while waiting for the replacement part.",
+                "Day 2: Checking supplies to see if the replacement part has arrived.",
+                "Day 2: Restoring power to the village as the replacement parts are now available.",
+                "Day 2: Checking supplies to see if the replacement part has arrived.",
+                "Day 2: Ensuring the repair area remains safe while awaiting parts.",
+                "Day 2: Checking if the replacement part has arrived.",
+                "Day 2: Maintaining a safe repair area while awaiting the replacement part.",
+                "Day 2: Checking if the replacement part has arrived.",
+                "Day 2: Inspecting the electrical plant for any faults causing the outage.",
+                "Day 3: Keeping the repair area safe while waiting for the replacement part.",
+                "Day 3: Restoring power to the village using the arrived replacement part.",
+                "Day 3: Testing the restored power to ensure village electricity is back online.",
+                "Day 3: Heading home after a day's work to rest.",
+                "Day 3: Resting at home for the night.",
+                "Day 3: Checking supplies at home for any needed components.",
+                "Day 3: Heading home after checking supplies at the electrical plant.",
+                "Day 3: Staying at home for the night.",
+                "Day 3: Going to the electrical plant to perform a routine inspection of the wiring."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Home B",
+                    "summary": "Conversation with Felix: 'Felix: Hey Carla, thanks for coming over. I noticed the lights in the kitchen flickering\u2014could you take a look? | Carla: Sure thing, Felix\u2014I'll start by checking the switch and then look at the wiring. | Felix: Thanks, just let me know if you need any help while you work. | Carla: Alright, I'll check the switch first and see if it's loose. | Felix: Sure, just shout if you need a hand. Let me know what you find. | Carla: The switch feels a bit loose\u2014I'll tighten it and see if that stops the flicker.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Electrical",
+                    "summary": "Conversation with Maria: 'Carla: Hey Maria, I'm Carla, the electrician. How can I help you today? | Maria: Hi Carla, I've noticed the kitchen light has been flickering lately. Could you take a look at it for me? | Carla: Sure thing, let me check the kitchen light first. | Maria: Thanks, Carla. Let me know if you need any access to the breaker panel while you\u2019re looking at it. | Carla: Sure, I\u2019ll need to check the breaker panel\u2014could you show me where it is? | Maria: The breaker panel is in the basement, near the water heater.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Electrical",
+                    "summary": "Conversation with Diego: 'Diego: Hi Carla, I'm Diego from apartment 3B. The lights in my living room have been flickering. | Carla: Sure thing, Diego\u2014I'll head over to 3B and check the wiring. Let me know if you've noticed any other issues. | Diego: Thanks, Carla. Please let me know when you\u2019ll be able to stop by. | Carla: I'll be there in about 10 minutes to take a look. | Diego: Sounds good, I'll be here. Let me know if you need any access. | Carla: On my way now, should be there shortly.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Electrical",
+                    "summary": "Conversation with Elena: 'Elena: Hey Carla, I noticed the lights flickering in the hallway. Could you take a look when you have a moment? | Carla: Sure thing, Elena. I'll check the hallway lights now. | Elena: Thanks, Carla. Let me know if you need any help. | Carla: Thanks, Elena. I'll let you know if I need help.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Elena: 'Elena: Hey Carla, I saw the lights flicker near the reactor earlier\u2014could you take a look at the wiring when you get a chance? | Carla: Sure thing, Elena. I'll head over there after I finish my current check. | Elena: Thanks, Carla. Let me know if you find anything odd. | Carla: Will do, Elena\u2014I'll check it out and let you know if anything's off. | Elena: Thanks, Carla. I'll stay nearby in case you need anything. | Carla: Alright, I'm heading over now. I'll let you know what I find.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Maria: 'Maria: Hey Carla, the hallway lights have been flickering all morning. Could you take a look when you have a moment? | Carla: Sure thing, I'll check the hallway lights right now. | Maria: Thanks, Carla. Let me know if you need any help. | Carla: Heading to the hallway now, I'll let you know what I find. | Maria: Alright, thanks Carla. Just shout if you need a hand. | Carla: I found a loose connection in the junction box; I'm tightening it now.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Elena: 'Carla: Hey Elena, I\u2019m doing a quick safety check on the main panel\u2014everything\u2019s holding up fine so far. | Elena: Thanks, Carla. Let me know if you need any help or spot anything unusual. | Carla: All circuits are nominal, but I noticed a flicker on the east wing outlet\u2014mind if I take a closer look? | Elena: Sure, go ahead and check it out. Let me know if you find anything. | Carla: Just tightened a loose connection\u2014no more flicker. All good now. | Elena: Great, thanks for handling that. Let me know if anything else comes up.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Ben: 'Ben: Hey Carla, I noticed a flickering light in the corridor\u2014could you take a look at it? | Carla: Sure thing, I'll head over and see what's causing the flicker. | Ben: Thanks, Carla. Let me know if you find anything odd. | Carla: I checked the corridor light; the bulb's loose. I'll tighten it now. | Ben: Thanks, Carla. Let me know if anything else looks off. | Carla: All set, the light should be steady now. Let me know if you need anything else.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home B",
+                    "summary": "Conversation with Ben: 'Ben: Hey Carla, thanks for coming out. I've noticed the lights in the kitchen keep flickering. | Carla: Sure thing, Ben. Let\u2019s start by checking the switch and the circuit breaker for any loose connections. | Ben: Sounds good. Let's start with the switch\u2014do you need any tools from me? | Carla: I\u2019m good for now, just a screwdriver if you have one handy. Let\u2019s pop the switch cover and see what\u2019s up. | Ben: Here's a screwdriver for you. | Carla: Alright, let\u2019s take off the switch cover and see if any wires are loose or corroded.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home B",
+                    "summary": "Conversation with Felix: 'Carla: Hey Felix, I'm just doing a quick safety check on the basement wiring\u2014everything looks good so far. | Felix: Thanks, Carla. If anything changes, just give me a shout. | Carla: Sure thing, I'll let you know if I spot anything odd. | Felix: All right, keep me posted if you notice anything. | Carla: All right, I\u2019ll keep an eye out and let you know if anything comes up. | Felix: Thanks, Carla. I appreciate it.'"
+                }
+            ]
+        },
+        {
+            "id": "v_diego",
+            "name": "Diego",
+            "role": "citizen",
+            "reflection": "I felt a deep sense of peace and wonder while stargazing with Felix under the clear night sky at the unknown outdoor spot. I realized that sharing quiet moments with neighbors strengthens our community bonds and reminds me to appreciate simple joys.",
+            "lessons": [
+                "Next time, I will bring a blanket and warm drink for stargazing.",
+                "Next time, I will check the weather forecast before planning outdoor night activities."
+            ],
+            "daily_summaries": [
+                "Day 1: I started my day by going to the office, checking supplies and conserving electricity during the outage, and then chatted with Maria about taking a break. Later I spoke with Carla about the flickering lights in my apartment, visited the electrical plant to ask about power restoration, and continued checking emergency supplies at work. Finally I headed home to verify my emergency supplies and settled in for the night.",
+                "Day 2: This morning I chatted with Elena about the possible power outage while making coffee and started turning off non-essential lights to conserve power. In the afternoon I spoke with Felix about the new mural, then headed to the electrical plant to inquire about power restoration before returning home. This evening I checked my emergency supplies, made sure I had enough for the outage, and continued conserving electricity by keeping lights off.",
+                "Day 3: I spent the morning inspecting my emergency supplies to ensure everything was ready. In the afternoon I rested at home, taking it easy while the power remained on. As evening fell, I stayed indoors because it was dark outside and the electricity was still working."
+            ],
+            "task_history": [
+                "Day 1: Going to the office to start work.",
+                "Day 1: Checking supplies in the office to see what we have during the outage.",
+                "Day 1: Conserving electricity to extend limited power resources.",
+                "Day 1: Checking supplies in the office.",
+                "Day 1: Conserving battery power to extend device usage.",
+                "Day 1: Checking emergency supplies at the office.",
+                "Day 1: Conserving supplies to last through the outage.",
+                "Day 1: Checking office supplies like water and snacks for the outage.",
+                "Day 1: Going to the electrical plant to ask when power will be restored.",
+                "Day 1: Going home to check my emergency supplies.",
+                "Day 1: Conserving electricity by turning off non-essential lights.",
+                "Day 1: Staying home for the night as it's dark and unsafe to go out.",
+                "Day 1: Conserving electricity by turning off unnecessary lights and appliances.",
+                "Day 1: Checking emergency supplies at home to ensure we have enough during the outage.",
+                "Day 1: Staying home after dark to stay safe during the outage.",
+                "Day 1: Checking emergency supplies at home.",
+                "Day 1: Staying home to rest through the night.",
+                "Day 2: Turning off non-essential lights to save power during the night outage.",
+                "Day 2: Checking emergency supplies at home.",
+                "Day 2: Going to the electrical plant to ask about power restoration.",
+                "Day 2: Returning home to check supplies and conserve power.",
+                "Day 2: Conserving electricity by turning off non-essential lights.",
+                "Day 2: Checking my emergency supplies at home to ensure I have enough for the outage.",
+                "Day 2: Conserving electricity at home to make supplies last.",
+                "Day 2: I check my emergency supplies at home to ensure I have enough for the outage.",
+                "Day 2: Going to the electrical plant to ask when power will be restored.",
+                "Day 2: Staying home after dark to conserve supplies during the outage.",
+                "Day 2: Keeping lights off to save power during the night outage.",
+                "Day 3: Resting at home through the night.",
+                "Day 3: Checking my emergency supplies at home.",
+                "Day 3: Staying home for the night as it's dark and power is on.",
+                "Day 3: Checking my emergency supplies to ensure I'm prepared.",
+                "Day 3: Staying indoors for the night as it's dark outside.",
+                "Day 3: Keeping lights off to save power through the night.",
+                "Day 3: Staying indoors for the night as it's dark outside.",
+                "Day 3: Turning off unnecessary lights to save electricity.",
+                "Day 3: Staying indoors for the night as it's dark and power is on.",
+                "Day 4: Resting at home for the night.",
+                "Day 4: Going to the office to start work."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Office",
+                    "summary": "Conversation with Maria: 'Diego: Hey Maria, how\u2019s your day going so far? | Maria: It's going pretty well, thanks! Just wrapped up a quick meeting and now I'm catching up on emails. | Diego: Sounds good! I just finished the budget report and grabbed a coffee. Want to grab a quick break later? | Maria: Sure, I'd love a break. How about we meet in the break room in ten minutes? | Diego: Great, see you in ten! | Maria: See you then! I'll save us a spot.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Diego: Hi Carla, I'm Diego from apartment 3B. The lights in my living room have been flickering. | Carla: Sure thing, Diego\u2014I'll head over to 3B and check the wiring. Let me know if you've noticed any other issues. | Diego: Thanks, Carla. Please let me know when you\u2019ll be able to stop by. | Carla: I'll be there in about 10 minutes to take a look. | Diego: Sounds good, I'll be here. Let me know if you need any access. | Carla: On my way now, should be there shortly.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Diego: Hey Maria, how are you holding up tonight? | Maria: I'm holding up okay, just trying to stay calm. How are you doing, Diego? | Diego: I'm trying to stay positive too; we'll get through this together. | Maria: I'm glad we can support each other. Let's try to get some rest. | Diego: Alright, let's both try to relax and get some sleep. Good night, Maria. | Maria: Good night, Diego.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Home A",
+                    "summary": "Conversation with Felix: 'Felix: Hey Diego, how's your day going? Anything interesting happen today? | Diego: It's been pretty quiet, just finished some chores. How about you? | Felix: Same here, just relaxing after my morning walk. Did you see the new mural near the fountain? | Diego: No, I haven't seen it yet. I'll check it out later. | Felix: Yeah, it's really colorful and adds a nice vibe to the plaza. Hope you enjoy it when you check it out. | Diego: Sounds great, I'll definitely take a look after I finish up here.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Home A",
+                    "summary": "Conversation with Elena: 'Diego: Hey Elena, how\u2019s your morning going? I heard there might be a power outage later today. | Elena: Morning's been alright, just making coffee. Yeah, I heard about the possible outage\u2014hope it's brief if it happens. | Diego: Hope the coffee's strong enough to keep you going if the lights go out. Let me know if you need anything. | Elena: Thanks, Diego. I\u2019ll let you know if I need help. | Diego: Sure thing, just give me a shout if you need anything. | Elena: Thanks, I appreciate it. I'll check my phone for updates.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Unknown",
+                    "summary": "Conversation with Felix: 'Felix: Hey Diego, how's your night going? | Diego: It's been quiet, thanks. How about yours? | Felix: Same here, just a calm evening under the stars. | Diego: Yeah, the sky looks clear tonight\u2014perfect for stargazing. Do you have a favorite constellation? | Felix: I\u2019m a fan of Orion\u2014its belt is unmistakable and easy to spot. | Diego: Orion's belt is indeed striking\u2014have you ever tried to spot the nebula in its sword?'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Ben: 'Ben: Hey Diego, everything alright? Need any assistance with the electrical setup? | Diego: Everything's fine, just double-checking the connections. Thanks for asking. | Ben: No problem, just let me know if anything looks off. | Diego: All good on my end; I'll let you know right away if I see anything odd. | Ben: Alright, Diego. I'll be nearby if you need anything else. | Diego: Thanks, Ben. I\u2019ll keep an eye on the connections and shout if anything looks off.'"
+                }
+            ]
+        },
+        {
+            "id": "v_elena",
+            "name": "Elena",
+            "role": "citizen",
+            "reflection": "I felt relieved and grateful when Carla fixed the flickering outlet in the electrical wing on Night of Day 2. I now understand that relying on each other's quick actions keeps our village safe during unexpected power issues.",
+            "lessons": [
+                "Next time, I will keep a spare set of flashlights and batteries in an easily accessible location.",
+                "Next time, I will schedule a brief check\u2011in with Carla after any reported electrical anomaly to ensure nothing is missed."
+            ],
+            "daily_summaries": [
+                "Day 1: I went to the office, turned off nonessential devices, and checked my emergency supplies. I then went to the grocery store to check food supplies and made sure unnecessary appliances were off. Finally, I visited the electrical plant to ask about power restoration and returned home to stay safe during the night outage.",
+                "Day 2: I started my morning chatting with Carla about the flickering reactor lights and with Diego over coffee while preparing for a possible power outage. In the afternoon I visited the electrical plant to ask about restoration, then returned home to check and organize my emergency supplies and conserve power by turning off nonessential lights. As evening fell I stayed indoors during the outage, carefully using my flashlight and batteries to stay safe until power returned.",
+                "Day 3: I woke up this morning to find the power out and stayed inside to stay safe. In the afternoon I turned off all nonessential lights and appliances to conserve power. This evening I remained at home, using only essential light and waited for the power to return."
+            ],
+            "task_history": [
+                "Day 1: Going to the office to work.",
+                "Day 1: Conserving energy at the office by turning off nonessential devices.",
+                "Day 1: Checking my emergency supplies at the office to see what I have available.",
+                "Day 1: Conserving battery and supplies to last through the outage.",
+                "Day 1: Going to the grocery store to check food supplies.",
+                "Day 1: Conserving energy by turning off unnecessary appliances.",
+                "Day 1: Checking supplies at the grocery to see what we have.",
+                "Day 1: Going to the electrical plant to ask when power will be restored.",
+                "Day 1: Returning home to stay safe during the night outage.",
+                "Day 1: Staying home to stay safe during the night outage.",
+                "Day 1: Checking emergency supplies at home.",
+                "Day 1: Staying home after dark to remain safe during the power outage.",
+                "Day 2: Conserving power by turning off nonessential lights and appliances at home.",
+                "Day 2: Going to the electrical plant to ask when power will be restored.",
+                "Day 2: Going home to check emergency supplies like candles and generator fuel.",
+                "Day 2: Conserving power by turning off nonessential lights and appliances.",
+                "Day 2: Checking my emergency supplies at home.",
+                "Day 2: Going to the electrical plant to ask about power restoration.",
+                "Day 2: Checking emergency supplies at home.",
+                "Day 2: Conserving battery and flashlight use to extend supplies during the outage.",
+                "Day 2: Staying home to stay safe during the night power outage.",
+                "Day 2: Checking my emergency supplies at home to ensure I have enough for the outage.",
+                "Day 2: Staying home after dark to stay safe during the power outage.",
+                "Day 2: Checking emergency supplies at home to ensure we have enough food and batteries.",
+                "Day 2: Staying indoors after dark to stay safe during the power outage.",
+                "Day 2: Checking my emergency supplies to ensure I have enough for the night.",
+                "Day 3: Staying home to stay safe during the night power outage.",
+                "Day 3: Conserving power by turning off nonessential lights and appliances.",
+                "Day 3: Staying indoors for the night as power is on and no crisis.",
+                "Day 3: Conserving power by turning off unnecessary lights at night.",
+                "Day 3: Staying home for the night as power is on and no further action needed.",
+                "Day 3: Checking my emergency supplies to ensure they're ready.",
+                "Day 3: Staying home for the night as power is on and no issues.",
+                "Day 3: Conserving power by turning off unused appliances.",
+                "Day 3: Staying home for the night as power is restored and no further action needed.",
+                "Day 3: Checking emergency supplies at home.",
+                "Day 4: Staying indoors for the night as it's dark and safe."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Office",
+                    "summary": "Conversation with Maria: 'Elena: Hey Maria, how's your day going? Anything interesting happen at the office today? | Maria: Hey Elena, it's been quiet so far\u2014just catching up on emails. How about you? | Elena: Not much, just wrapped up the quarterly report. How's yours going? | Maria: Mine's still in progress, just need a few more data points before I can finish. How did yours turn out? | Elena: It went well\u2014I got positive feedback on the report. Do you need any help gathering those data points for yours? | Maria: Thanks, Elena\u2014maybe just the sales figures from last month? I could use a hand if you're free.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Elena: Hey Carla, I noticed the lights flickering in the hallway. Could you take a look when you have a moment? | Carla: Sure thing, Elena. I'll check the hallway lights now. | Elena: Thanks, Carla. Let me know if you need any help. | Carla: Thanks, Elena. I'll let you know if I need help.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Maria: Hey Elena, did you hear about the storm coming tonight? | Elena: Yeah, I heard the forecast. Hope we're prepared. | Maria: I'm worried the storm might knock out the power. Do we have enough flashlights and batteries? | Elena: I've got a couple of flashlights and extra batteries in the kitchen. We should be okay for now. | Maria: Thanks, Elena. Let's also check the candles and make sure the generator has fuel. | Elena: I'll check the candles and make sure the generator has enough fuel.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Elena: Hey Carla, I saw the lights flicker near the reactor earlier\u2014could you take a look at the wiring when you get a chance? | Carla: Sure thing, Elena. I'll head over there after I finish my current check. | Elena: Thanks, Carla. Let me know if you find anything odd. | Carla: Will do, Elena\u2014I'll check it out and let you know if anything's off. | Elena: Thanks, Carla. I'll stay nearby in case you need anything. | Carla: Alright, I'm heading over now. I'll let you know what I find.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Home A",
+                    "summary": "Conversation with Diego: 'Diego: Hey Elena, how\u2019s your morning going? I heard there might be a power outage later today. | Elena: Morning's been alright, just making coffee. Yeah, I heard about the possible outage\u2014hope it's brief if it happens. | Diego: Hope the coffee's strong enough to keep you going if the lights go out. Let me know if you need anything. | Elena: Thanks, Diego. I\u2019ll let you know if I need help. | Diego: Sure thing, just give me a shout if you need anything. | Elena: Thanks, I appreciate it. I'll check my phone for updates.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Carla: 'Carla: Hey Elena, I\u2019m doing a quick safety check on the main panel\u2014everything\u2019s holding up fine so far. | Elena: Thanks, Carla. Let me know if you need any help or spot anything unusual. | Carla: All circuits are nominal, but I noticed a flicker on the east wing outlet\u2014mind if I take a closer look? | Elena: Sure, go ahead and check it out. Let me know if you find anything. | Carla: Just tightened a loose connection\u2014no more flicker. All good now. | Elena: Great, thanks for handling that. Let me know if anything else comes up.'"
+                }
+            ]
+        },
+        {
+            "id": "v_felix",
+            "name": "Felix",
+            "role": "citizen",
+            "reflection": "I felt a warm sense of gratitude and connection when Maria offered to share her cheese and apples with me at Home\u202fA during our quiet night chat. This reminded me that small gestures of kindness reinforce the supportive spirit of our village.",
+            "lessons": [
+                "Next time I will keep extra snacks on hand for spontaneous sharing.",
+                "I will check in with neighbors during evenings to nurture community ties."
+            ],
+            "daily_summaries": [
+                "Day 1: I helped Carla tighten the loose kitchen switch and then headed to the office to work. I spent the afternoon checking food and water supplies at the grocery store and later visited the electrical plant to ask when power would be restored. In the evening I returned home, inspected my emergency supplies, and stayed inside to conserve resources during the outage.",
+                "Day 2: I went to the grocery store to check food and water supplies this morning. In the afternoon I visited the electrical plant for a power restoration update and then inspected my emergency supplies at home. I spent the evening staying inside, conserving resources during the outage.",
+                "Day 3: I spent the morning at home chatting with Maria and planning to meet her at the park later. In the afternoon I walked to the electrical plant to get an update on power restoration. When evening came I stayed indoors to stay safe, rested, and conserved my supplies through the night."
+            ],
+            "task_history": [
+                "Day 1: Going to the office to work.",
+                "Day 1: Going to the grocery to check food and water supplies.",
+                "Day 1: Conserving resources by turning off non-essential appliances.",
+                "Day 1: Checking supplies at the grocery store.",
+                "Day 1: Going to the electrical plant to ask when power will be restored.",
+                "Day 1: Going home to check my emergency supplies.",
+                "Day 1: Staying home for the night to conserve resources during the outage.",
+                "Day 1: Checking emergency supplies at home.",
+                "Day 1: Staying home to conserve resources during the night outage.",
+                "Day 1: Conserving food and water to last through the night.",
+                "Day 1: Staying at home to conserve resources during the night outage.",
+                "Day 1: Conserving water and food to make supplies last through the outage.",
+                "Day 2: Staying home for the night to conserve resources during the outage.",
+                "Day 2: Going to the grocery to check food and water supplies.",
+                "Day 2: Going to the electrical plant to ask for an update on power restoration.",
+                "Day 2: Going home to inspect my emergency supplies.",
+                "Day 2: Conserving food and water to stretch supplies during the outage.",
+                "Day 2: Checking emergency supplies at home to ensure we have enough for the outage.",
+                "Day 2: Conserving supplies at home to extend resources during the outage.",
+                "Day 2: Staying home at night to conserve resources and stay safe during the outage.",
+                "Day 2: Conserving resources at home during the night outage.",
+                "Day 2: Staying home to conserve resources during the night outage.",
+                "Day 2: Checking my emergency supplies at home.",
+                "Day 2: Conserving food and water supplies while waiting for power restoration.",
+                "Day 2: Staying home after dark to conserve resources during the outage.",
+                "Day 2: Conserving resources at home during the outage.",
+                "Day 3: Staying home to stay safe after dark during the outage.",
+                "Day 3: Going to the electrical plant to ask for power restoration update.",
+                "Day 3: Staying home to rest for the night.",
+                "Day 3: I will conserve my supplies through the night.",
+                "Day 3: Staying home for the night as it's dark and no need to go out.",
+                "Day 3: Checking emergency supplies at home.",
+                "Day 3: Resting at home for the night.",
+                "Day 3: Checking my emergency supplies before bed.",
+                "Day 4: Staying indoors for the night to rest.",
+                "Day 4: Going to the office to start my workday."
+            ],
+            "encounters": [
+                {
+                    "day": 1,
+                    "location": "Home B",
+                    "summary": "Conversation with Carla: 'Felix: Hey Carla, thanks for coming over. I noticed the lights in the kitchen flickering\u2014could you take a look? | Carla: Sure thing, Felix\u2014I'll start by checking the switch and then look at the wiring. | Felix: Thanks, just let me know if you need any help while you work. | Carla: Alright, I'll check the switch first and see if it's loose. | Felix: Sure, just shout if you need a hand. Let me know what you find. | Carla: The switch feels a bit loose\u2014I'll tighten it and see if that stops the flicker.'"
+                },
+                {
+                    "day": 1,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Felix: Hey Maria, did you hear that thunder? It's really loud tonight. | Maria: Yeah, it\u2019s shaking the windows. Hope it passes soon. | Felix: Yeah, sounds like a storm rolling in. Let's hope it doesn't knock the power out. | Maria: Yeah, I hope the lights stay on. Maybe we should grab some candles just in case. | Felix: Good idea, I'll grab some candles from the kitchen just in case. | Maria: Thanks, Felix. Let's hope it's just a brief rumble.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Home A",
+                    "summary": "Conversation with Diego: 'Felix: Hey Diego, how's your day going? Anything interesting happen today? | Diego: It's been pretty quiet, just finished some chores. How about you? | Felix: Same here, just relaxing after my morning walk. Did you see the new mural near the fountain? | Diego: No, I haven't seen it yet. I'll check it out later. | Felix: Yeah, it's really colorful and adds a nice vibe to the plaza. Hope you enjoy it when you check it out. | Diego: Sounds great, I'll definitely take a look after I finish up here.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Electrical",
+                    "summary": "Conversation with Maria: 'Felix: Hey Maria, how's your shift going? | Maria: It's been busy but manageable. Thanks for asking! | Felix: Glad to hear it. Anything interesting happening on the floor? | Maria: Just a couple of minor wiring hiccups, but nothing we can't handle. | Felix: Hope everything stays smooth\u2014let me know if you need an extra hand. | Maria: Thanks, Felix! I'll let you know if I need an extra hand.'"
+                },
+                {
+                    "day": 2,
+                    "location": "Unknown",
+                    "summary": "Conversation with Diego: 'Felix: Hey Diego, how's your night going? | Diego: It's been quiet, thanks. How about yours? | Felix: Same here, just a calm evening under the stars. | Diego: Yeah, the sky looks clear tonight\u2014perfect for stargazing. Do you have a favorite constellation? | Felix: I\u2019m a fan of Orion\u2014its belt is unmistakable and easy to spot. | Diego: Orion's belt is indeed striking\u2014have you ever tried to spot the nebula in its sword?'"
+                },
+                {
+                    "day": 2,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Maria: Hey Felix, how's your night going? Anything interesting happen today? | Felix: Not much, just enjoying the quiet night. You? | Maria: Just got back from the market, found some fresh bread. How about you? | Felix: It's been peaceful, just listening to the night sounds. That bread sounds great\u2014did you get anything else tasty? | Maria: Yeah, I also grabbed some cheese and a few apples\u2014nothing fancy, but it\u2019ll make a nice snack. | Felix: That sounds delicious\u2014maybe we could share a bite?'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home A",
+                    "summary": "Conversation with Maria: 'Maria: Hey Felix, how's your day going? | Felix: Hey Maria! I'm doing well. How's your day? | Maria: It's going fine, just finished some chores. How about you? | Felix: Just relaxing at home, maybe later I'll head to the park. How about you, any plans? | Maria: I'm thinking of taking a walk later too\u2014maybe we could meet up at the park? | Felix: Sounds great! Let's meet at the park in an hour.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home B",
+                    "summary": "Conversation with Carla: 'Carla: Hey Felix, I'm just doing a quick safety check on the basement wiring\u2014everything looks good so far. | Felix: Thanks, Carla. If anything changes, just give me a shout. | Carla: Sure thing, I'll let you know if I spot anything odd. | Felix: All right, keep me posted if you notice anything. | Carla: All right, I\u2019ll keep an eye out and let you know if anything comes up. | Felix: Thanks, Carla. I appreciate it.'"
+                },
+                {
+                    "day": 3,
+                    "location": "Home B",
+                    "summary": "Conversation with Ben: 'Ben: Hey Felix, Ben here. Just doing a nightly check\u2014everything alright? | Felix: Yeah, all good. Just trying to get some rest. | Ben: Alright, just wanted to make sure you're settling in okay. Let me know if you need anything. | Felix: Thanks, Ben. Good night.'"
+                }
+            ]
+        }
+    ]
+}

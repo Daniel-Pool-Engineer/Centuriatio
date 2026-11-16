@@ -62,6 +62,8 @@ Smallville evaluated agents via manual human observation and qualitative intervi
 
 ---
 ## Installation & Setup
+### 0. Navigator API Key
+Generate API Key via Navigator
 
 ### 1. Requirements
 ```bash
