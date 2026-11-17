@@ -18,8 +18,10 @@ from frontend.village.map import create_test_map
 from frontend.village.renderer import VillageMapRenderer
 from backend.simulation_manager import VillagerManager
 from frontend.ui.villager_renderer import VillagerRenderer
+from frontend.ui.audio import AudioManager
 
 pygame.init()
+audio = AudioManager()
 
 
 class AppState(Enum):
@@ -150,6 +152,7 @@ def handle_disruption(name: str, is_active: bool) -> None:
 
     if name == "Power Outage":
         if is_active:
+            audio.play_power_outage()
             # recovery: order the replacement part as soon as the outage starts
             recovery = RecoveryPhase()
             recovery.start_recovery(sim_clock.day_number, OUTAGE_DURATION_DAYS)
@@ -158,6 +161,7 @@ def handle_disruption(name: str, is_active: bool) -> None:
             # recovery: repair is finished, clear it for next time
             recovery = None
             villagers.restore_requested = False
+            audio.play_power_restored()
 
         # Villagers log their own departure individually
         for message in villagers.set_power_outage(is_active):
@@ -194,6 +198,7 @@ def reset_simulation() -> None:
     # start everything over from Normal Day 1
     global villagers, active_disruption, selected_villager_id, recovery, in_recovery
     sim_clock.reset()
+    audio.play_daytime()
     backend_sim.reset()
     villagers = VillagerManager(village_map, llm_client=llm_client)
     selected_villager_id = None
@@ -210,6 +215,7 @@ def handle_control(name: str) -> None:
     global app_state
     if name == "finish":
         app_state = AppState.EXPORTING
+        audio.stop_all()
         villagers.social.export_now(villagers.villagers, sim_clock.day_number, active_disruption == "Power Outage")
         return
     
@@ -292,6 +298,22 @@ def toggle_labels() -> None:
     show_labels = not show_labels
     settings_menu.buttons[1].label = f"Building Labels: {'On' if show_labels else 'Off'}"
 
+def toggle_audio() -> None:
+    # Cycle between High, Low, and Off.
+    levels = ["High", "Low", "Off"]
+    current_index = levels.index(audio.volume_level)
+    next_level = levels[(current_index + 1) % len(levels)]
+
+    audio.set_level(next_level)
+    settings_menu.buttons[2].label = f"Audio: {audio.volume_level}"
+
+    # Resume the correct background sound when audio is turned back on.
+    if audio.enabled and app_state == AppState.RUNNING:
+        if sim_clock.day_night == "Night":
+            audio.play_nighttime()
+        else:
+            audio.play_daytime()
+
 
 main_menu = MenuPanel(
     "Centuriatio",
@@ -307,6 +329,7 @@ settings_menu = MenuPanel(
     [
         (f"Show Grid: {'On' if show_grid else 'Off'}", toggle_grid),
         (f"Building Labels: {'On' if show_labels else 'Off'}", toggle_labels),
+        (f"Audio: {audio.volume_level}", toggle_audio),
         ("Back", return_from_settings),
     ],
 )
@@ -664,6 +687,13 @@ while app_running:
         # Advance the clock and villagers only while the simulation is active.
         for phase, _day in sim_clock.update(dt):
             villagers.set_night(phase == "Night")
+
+            # Switch the background sounds between day and night.
+            if phase == "Night":
+                audio.play_nighttime()
+            else:
+                audio.play_daytime()
+
             for villager in villagers.villagers:
                 if villager.agent is not None:
                     villager.decision_cooldown = 0.0
