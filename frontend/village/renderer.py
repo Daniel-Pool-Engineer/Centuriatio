@@ -470,83 +470,340 @@ class VillageMapRenderer:
         *,
         show_labels: bool,
     ) -> None:
+        # Draw the building based on what it is used for.
         bounds = self._rect_to_screen(building.bounds)
-        
-        color = self.building_colors.get(building.id, (145, 145, 145))
-        border_color = self.building_border_colors.get(building.id, self.text_color)
+        building_id = building.id
 
-        # 1. Shadow
-        shadow = bounds.move(max(2, round(5 * self.zoom)), max(2, round(5 * self.zoom)))
-        pygame.draw.rect(surface, self.shadow_color, shadow, border_radius=max(2, round(5 * self.zoom)))
+        border = self.building_border_colors.get(building_id, self.text_color)
+        color = self.building_colors.get(building_id, (145, 145, 145))
 
-        # 2. Background Color
-        pygame.draw.rect(surface, color, bounds, border_radius=max(2, round(5 * self.zoom)))
+        shadow = bounds.move(3, 3)
+        pygame.draw.rect(surface, self.shadow_color, shadow)
 
-        # 3. Windows
-        self._draw_windows(surface, bounds)
+        # The power building is an outdoor electrical yard.
+        if building_id == "electrical":
+            # Gate where workers enter the yard
+            entrance = self.world_to_screen(building.entrance)
+            pygame.draw.line(
+                surface, (210, 190, 120),
+                (entrance[0] - 12, bounds.top),
+                (entrance[0] + 12, bounds.top), 4
+            )
+            pygame.draw.rect(surface, (125, 135, 120), bounds)
+            pygame.draw.rect(surface, (65, 75, 65), bounds, 2)
 
-        # 4. Border
-        pygame.draw.rect(surface, border_color, bounds, width=max(1, round(2 * self.zoom)), border_radius=max(2, round(5 * self.zoom)))
+            # Fence around the yard
+            for x in range(bounds.left, bounds.right, 12):
+                pygame.draw.line(
+                    surface, (75, 75, 70),
+                    (x, bounds.top), (x, bounds.bottom), 1
+                )
+            pygame.draw.line(
+                surface, (75, 75, 70),
+                (bounds.left, bounds.top), (bounds.right, bounds.top), 3
+            )
+            pygame.draw.line(
+                surface, (75, 75, 70),
+                (bounds.left, bounds.bottom), (bounds.right, bounds.bottom), 3
+            )
+            pygame.draw.line(
+                surface, (75, 75, 70),
+                (bounds.left, bounds.top), (bounds.left, bounds.bottom), 3
+            )
+            pygame.draw.line(
+                surface, (75, 75, 70),
+                (bounds.right, bounds.top), (bounds.right, bounds.bottom), 3
+            )
 
-        # 5. Icon
-        icon_name = building.id
-        if building.id.startswith("home"):
+            # Transformer boxes
+            unit_width = max(15, bounds.width // 7)
+            unit_height = max(18, bounds.height // 4)
+
+            for x in (bounds.left + bounds.width // 4,
+                      bounds.centerx + bounds.width // 5):
+                unit = pygame.Rect(
+                    x - unit_width // 2,
+                    bounds.centery - unit_height // 2,
+                    unit_width,
+                    unit_height,
+                )
+                pygame.draw.rect(surface, (105, 110, 105), unit)
+                pygame.draw.rect(surface, (45, 50, 45), unit, 2)
+                pygame.draw.line(
+                    surface, (190, 190, 175),
+                    (unit.left + 4, unit.top + 5),
+                    (unit.right - 4, unit.top + 5), 2
+                )
+
+            # Power lines and poles
+            pole_y = bounds.bottom - bounds.height // 4
+            for x in (bounds.left + bounds.width // 4,
+                      bounds.right - bounds.width // 4):
+                pygame.draw.line(
+                    surface, (55, 55, 55),
+                    (x, pole_y - 15), (x, pole_y + 15), 3
+                )
+                pygame.draw.line(
+                    surface, (55, 55, 55),
+                    (x - 9, pole_y - 12), (x + 9, pole_y - 12), 2
+                )
+
+            pygame.draw.line(
+                surface, (45, 45, 45),
+                (bounds.left + bounds.width // 4, pole_y - 12),
+                (bounds.right - bounds.width // 4, pole_y - 12), 1
+            )
+
+        else:
+            # These buildings face the road above them.
+            faces_top = building_id in ("fire", "grocery", "home_c", "home_d")
+
+            roof_height = max(12, round(bounds.height * 0.20))
+
+            if faces_top:
+                wall = pygame.Rect(
+                    bounds.left,
+                    bounds.top,
+                    bounds.width,
+                    bounds.height - roof_height,
+                )
+            else:
+                wall = pygame.Rect(
+                    bounds.left,
+                    bounds.top + roof_height,
+                    bounds.width,
+                    bounds.height - roof_height,
+                )
+
+            pygame.draw.rect(surface, color, wall)
+
+            # House roofs
+            if building_id.startswith("home"):
+                roof_color = {
+                    "home_a": (135, 65, 45),
+                    "home_b": (95, 100, 110),
+                    "home_c": (125, 65, 90),
+                    "home_d": (55, 90, 145),
+                }.get(building_id, (130, 70, 50))
+
+                if faces_top:
+                    roof_points = [
+                        (bounds.left, wall.bottom),
+                        (bounds.centerx, bounds.bottom),
+                        (bounds.right, wall.bottom),
+                    ]
+                else:
+                    roof_points = [
+                        (bounds.left, wall.top),
+                        (bounds.centerx, bounds.top),
+                        (bounds.right, wall.top),
+                    ]
+
+                pygame.draw.polygon(surface, roof_color, roof_points)
+                pygame.draw.lines(surface, border, False, roof_points, 2)
+
+            else:
+                roof_color = {
+                    "hospital": (190, 195, 195),
+                    "fire": (145, 45, 40),
+                    "police": (45, 65, 105),
+                    "school": (180, 140, 45),
+                    "grocery": (140, 100, 55),
+                    "office": (80, 95, 110),
+                }.get(building_id, (100, 100, 100))
+
+                roof_y = wall.bottom if faces_top else bounds.top
+
+                pygame.draw.rect(
+                    surface,
+                    roof_color,
+                    (bounds.left, roof_y, bounds.width, roof_height),
+                )
+
+            # Windows only go on buildings that need them.
+            if building_id in ("home_a", "home_b", "home_c", "home_d", "hospital", "police", "school", "office"):
+                self._draw_windows(surface, wall, building_id)
+
+            # Fire station garage doors
+            if building_id == "fire":
+                garage_width = max(35, wall.width // 3)
+                garage_height = max(30, wall.height // 2)
+                garage_y = wall.top if faces_top else wall.bottom - garage_height
+
+                for i in range(2):
+                    garage = pygame.Rect(
+                        wall.left + 10 + i * (garage_width + 12),
+                        garage_y,
+                        garage_width,
+                        garage_height,
+                    )
+                    pygame.draw.rect(surface, (100, 105, 110), garage)
+                    pygame.draw.rect(surface, (45, 45, 50), garage, 2)
+
+                    for y in range(garage.top + 8, garage.bottom, 8):
+                        pygame.draw.line(
+                            surface, (155, 155, 155),
+                            (garage.left + 3, y),
+                            (garage.right - 3, y), 1
+                        )
+
+            # Grocery store windows and awning face the road.
+            elif building_id == "grocery":
+                glass_width = max(25, wall.width // 4)
+                glass_height = max(25, wall.height // 3)
+
+                glass_y = wall.top + 20
+
+                for i in range(2):
+                    glass = pygame.Rect(
+                        wall.left + 12 + i * (glass_width + 12),
+                        glass_y,
+                        glass_width,
+                        glass_height,
+                    )
+                    pygame.draw.rect(surface, (110, 175, 195), glass)
+                    pygame.draw.rect(surface, border, glass, 2)
+
+                awning_y = wall.bottom - 15
+                stripe_width = max(8, wall.width // 8)
+
+                for x in range(wall.left + 5, wall.right - 5, stripe_width):
+                    stripe_color = (190, 55, 55) if (x // stripe_width) % 2 == 0 else (240, 230, 205)
+                    pygame.draw.rect(
+                        surface,
+                        stripe_color,
+                        (x, awning_y, stripe_width, 10),
+                    )
+
+            # School sign and clock
+            elif building_id == "school":
+                sign = pygame.Rect(wall.left + 5, wall.top - 12, wall.width // 3, 18)
+                pygame.draw.rect(surface, (245, 235, 190), sign)
+                pygame.draw.rect(surface, border, sign, 1)
+
+                clock_pos = (wall.right - 20, wall.top - 2)
+                pygame.draw.circle(surface, (245, 245, 225), clock_pos, 9)
+                pygame.draw.circle(surface, border, clock_pos, 9, 2)
+                pygame.draw.line(
+                    surface, border, clock_pos,
+                    (clock_pos[0], clock_pos[1] - 5), 2
+                )
+                pygame.draw.line(
+                    surface, border, clock_pos,
+                    (clock_pos[0] + 4, clock_pos[1] + 2), 2
+                )
+
+            # Police station sign
+            elif building_id == "police":
+                pygame.draw.circle(
+                    surface, (220, 195, 80),
+                    (wall.left + 20, wall.top + 2), 10
+                )
+                pygame.draw.circle(
+                    surface, border,
+                    (wall.left + 20, wall.top + 2), 10, 2
+                )
+
+            # Office gets a simple row of windows
+            elif building_id == "office":
+                pass
+
+            # Draw the door on the side facing the road.
+            entrance = self.world_to_screen(building.entrance)
+            door_width = max(5, round(14 * self.zoom))
+            door_height = max(8, round(22 * self.zoom))
+
+            if building.entrance[1] <= building.bounds[1]:
+                door_y = wall.top
+            else:
+                door_y = entrance[1] - door_height
+
+            door = pygame.Rect(
+                entrance[0] - door_width // 2,
+                door_y,
+                door_width,
+                door_height,
+            )
+            pygame.draw.rect(surface, self.door_color, door)
+            pygame.draw.rect(surface, border, door, 1)
+
+        # Put a small icon sign on every building.
+        icon_name = building_id
+
+        if building_id.startswith("home"):
             icon_name = building.building_type
-        if building.id in ("work", "office"):
+        elif building_id == "office":
             icon_name = "office"
 
         icon = self.building_icons.get(icon_name)
+
         if icon is not None:
-            icon_size = max(1, int(min(bounds.width, bounds.height) * 0.45))
+            icon_size = max(12, min(22, int(min(bounds.width, bounds.height) * 0.16)))
             scaled_icon = pygame.transform.smoothscale(icon, (icon_size, icon_size))
-            icon_rect = scaled_icon.get_rect(center=bounds.center)
-            surface.blit(scaled_icon, icon_rect)
 
-        # 6. Door
-        entrance = self.world_to_screen(building.entrance)
-        door_width = max(4, round(12 * self.zoom))
-        door_height = max(6, round(18 * self.zoom))
-        door = pygame.Rect(
-            entrance[0] - door_width // 2,
-            entrance[1] - door_height,
-            door_width,
-            door_height,
-        )
-        pygame.draw.rect(surface, self.door_color, door)
-        pygame.draw.circle(surface, self.entrance_color, entrance, max(2, round(4 * self.zoom)))
+            # Put the sign near the top right of the building.
+            sign = pygame.Rect(0, 0, icon_size + 8, icon_size + 8)
 
-        # 7. Label
+            # Put bottom building icons near the bottom instead.
+            if building_id in ("fire", "grocery", "home_c", "home_d", "electrical"):
+                sign.center = (bounds.centerx, bounds.bottom - 22)
+            else:
+                sign.center = (bounds.centerx, bounds.top + 22)
+
+            pygame.draw.rect(surface, (240, 235, 215), sign)
+            pygame.draw.rect(surface, border, sign, 1)
+
+            surface.blit(
+                scaled_icon,
+                scaled_icon.get_rect(center=sign.center)
+            )
+
+        # Draw the building name above it.
         if show_labels and self.zoom >= 0.45:
-            label_text = building.id.replace("-", " ").title()
+            label_text = building.display_name
             if label_text not in self._label_cache:
-                self._label_cache[label_text] = self.font.render(label_text, True, self.text_color)
+                self._label_cache[label_text] = self.font.render(
+                    label_text, True, self.text_color
+                )
+
             label = self._label_cache[label_text]
             label_rect = label.get_rect(midbottom=(bounds.centerx, bounds.top - 4))
             surface.blit(label, label_rect)
 
-    def _draw_windows(self, surface: pygame.Surface, bounds: pygame.Rect) -> None:
-        # Draws windows across the building.
+
+    def _draw_windows(
+        self,
+        surface: pygame.Surface,
+        bounds: pygame.Rect,
+        building_id: str = "",
+    ) -> None:
+        # Draw windows on the front of the building.
         window_width = max(4, round(10 * self.zoom))
-        window_height = max(4, round(8 * self.zoom))
+        window_height = max(4, round(9 * self.zoom))
 
         if bounds.width < window_width * 2 or bounds.height < window_height * 2:
             return
 
-        spacing_x = max(window_width + 3, round(22 * self.zoom))
-        spacing_y = max(window_height + 3, round(20 * self.zoom))
+        spacing_x = max(window_width + 3, round(24 * self.zoom))
+        spacing_y = max(window_height + 3, round(25 * self.zoom))
 
         start_x = bounds.left + round(15 * self.zoom)
-        start_y = bounds.top + round(20 * self.zoom)
+        start_y = bounds.top + round(35 * self.zoom)
 
         y = start_y
-        while y + window_height < bounds.bottom - round(18 * self.zoom):
+        while y + window_height < bounds.bottom - round(20 * self.zoom):
             x = start_x
+
             while x + window_width < bounds.right - round(15 * self.zoom):
                 window = pygame.Rect(x, y, window_width, window_height)
-                pygame.draw.rect(surface, self.window_color, window)
-                pygame.draw.rect(surface, self.text_color, window, width=1)
+
+                pygame.draw.rect(surface, (115, 175, 195), window)
+                pygame.draw.rect(surface, (45, 45, 50), window, 1)
+
                 x += spacing_x
+
             y += spacing_y
+
 
     def _draw_grid(self, surface: pygame.Surface, village_map: VillageMap) -> None:
         # Draws the map grid when it is enabled.
