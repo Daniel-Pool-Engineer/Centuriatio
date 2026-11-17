@@ -2,7 +2,7 @@
 # Centuriatio: An Adapted Generative Agent Architecture for Urban Crisis Simulation
 **Team Name:** f'(ai)
 
-**Team Members:** Daniel Pool, Valeriya Lunyakova, add your names
+**Team Members:** Daniel Pool, Valeriya Lunyakova, Keyla Perez, add your names
 
 ## Overview 
 **Centuriatio** is a real-time, agent-based simulation designed to study human behavior and social resilience during infrastructure failures.
