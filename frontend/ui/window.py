@@ -101,6 +101,7 @@ class VillagerPresentation:
 
     @property
     def villager_id(self) -> str:
+        # Gets the villager's ID from its agent.
         return self.villager.agent_id
 
 
@@ -236,6 +237,7 @@ def start_simulation() -> None:
 
 
 def toggle_pause() -> None:
+    # Pauses or resumes the simulation.
     global overlay_state
     if not sim_clock.paused:
         sim_clock.paused = True
@@ -246,39 +248,46 @@ def toggle_pause() -> None:
 
 
 def open_settings() -> None:
+    # Opens the settings menu and remember the previous screen.
     global overlay_state, settings_return_overlay
     settings_return_overlay = overlay_state
     overlay_state = OverlayState.SETTINGS
 
 
 def return_from_settings() -> None:
+    # Goes back to the screen that was open before settings.
     global overlay_state
     overlay_state = settings_return_overlay
 
 
 def request_exit() -> None:
+    # Opens the confirmation menu before ending the simulation.
     global overlay_state, confirm_return_overlay
     confirm_return_overlay = overlay_state
     overlay_state = OverlayState.CONFIRM_EXIT
 
 
 def cancel_exit() -> None:
+    # Returns to the previous menu without ending the simulation.
     global overlay_state
     overlay_state = confirm_return_overlay
 
 
 def quit_application() -> None:
+    # Stops the main application loop.
     global app_running
     app_running = False
 
 
 def toggle_grid() -> None:
+    # Turns the map grid on or off.
     global show_grid
     show_grid = not show_grid
     settings_menu.buttons[0].label = f"Show Grid: {'On' if show_grid else 'Off'}"
 
 
 def toggle_labels() -> None:
+    # Turns building labels on or off.
     global show_labels
     show_labels = not show_labels
     settings_menu.buttons[1].label = f"Building Labels: {'On' if show_labels else 'Off'}"
@@ -383,6 +392,7 @@ _overlay_surface = None
 
 
 def draw_overlay(alpha: int) -> None:
+    # Draws a dark transparent overlay over the screen.
     global _overlay_surface
     if _overlay_surface is None or _overlay_surface.get_size() != screen.get_size():
         _overlay_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
@@ -485,7 +495,7 @@ def draw_traffic_waits() -> None:
     ]
     if villagers.fire_truck.traffic_stop > 0:
         waiting_positions.append(villagers.fire_truck.position)
-
+    
     for position in waiting_positions:
         x, y = renderer.world_to_screen(position)
         label = info_font.render("Waiting", True, (255, 255, 255))
@@ -495,6 +505,7 @@ def draw_traffic_waits() -> None:
 
 
 def villager_presentations() -> list[VillagerPresentation]:
+    # Gets the screen positions and display information for each villager.
     assert villagers is not None
     presentations = []
     for villager in villagers.villagers:
@@ -512,6 +523,7 @@ def villager_presentations() -> list[VillagerPresentation]:
 
 
 def villager_at(
+    # Checks if the mouse is clicking on a villager.
     position: tuple[int, int],
     presentations: list[VillagerPresentation] | None = None,
 ) -> VillagerPresentation | None:
@@ -528,6 +540,7 @@ def villager_at(
 
 
 def draw_villager_info(villager: VillagerPresentation) -> None:
+    # Displays a small information box for the selected villager.
     lines = (
         villager.villager.name,
         f"Role: {villager.role.replace('_', ' ').title()}",

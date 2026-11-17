@@ -29,6 +29,7 @@ class Grid:
     grid: list[list[int]] = field(init=False)
 
     def __post_init__(self) -> None:
+        # Checks the grid size and create the empty grid.
         if self.width <= 0 or self.height <= 0:
             raise ValueError("grid dimensions must be positive")
         if self.cell_size <= 0:
@@ -84,6 +85,7 @@ class Building:
 
     @property
     def display_name(self) -> str:
+        # Makes the building ID easier to read on the screen.
         return self.id.replace("_", " ").title()
 
 
@@ -98,6 +100,7 @@ class VillageMap:
 
     @property
     def world_size(self) -> tuple[int, int]:
+        # Gets the total map size from the grid.
         return self.grid.world_size
 
     def sidewalk(self, sidewalk_id: str) -> Sidewalk:
@@ -115,6 +118,7 @@ class VillageMap:
         raise KeyError(f"Unknown building: {building_id}")
 
     def validate(self) -> None:
+        # Checks that all map objects have valid positions and connections.
         sidewalk_ids = {sidewalk.id for sidewalk in self.sidewalks}
         building_ids = {building.id for building in self.buildings}
         if len(building_ids) != len(self.buildings):
@@ -164,6 +168,7 @@ class VillageMap:
 
 
 def create_test_map() -> VillageMap:
+    # Creates the starter village with roads, sidewalks, and buildings.
     village_map = VillageMap(
         grid=Grid(*DEFAULT_MAP_CELLS),
         roads=[

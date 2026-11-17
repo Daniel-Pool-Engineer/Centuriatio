@@ -115,28 +115,34 @@ class BottomMenuBar(FloatingMenuBar):
             button.is_active = button.label == self.active_disruption
 
     def clear_disruption(self) -> None:
-        # turn off the active disruption without sending a notification (used by reset)
+        # Turns off the current disruption and remove its button highlight.
+        # Turns off the active disruption without sending a notification (used by reset)
         self.active_disruption = None
         for button in self.disruption_buttons:
             button.is_active = False
 
     def set_control_state(self, paused: bool, speed: int) -> None:
-        # update the control button labels to match the clock
+        # Updates the freeze and speed button labels based on the current simulation state.
+        # Updates the control button labels to match the clock
         self.freeze_button.label = "Unfreeze" if paused else "Freeze"
         self.speed_button.label = f"Speed {speed}x"
 
     def set_status(self, text: str) -> None:
-        # text shown in the top-left corner, e.g. "Normal Day 1 · 10:30"
+        # Saves the current day and time text to display on the menu bar.
+        # Text shown in the top-left corner, e.g. "Normal Day 1 · 10:30"
         self.status_text = text
 
     def _control(self, name: str) -> None:
+        # Sends the selected control action to the main application.
         if self.on_control is not None:
             self.on_control(name)
 
     def _notify(self, name: str, is_active: bool) -> None:
+        # Notifies the application when a disruption starts or ends.
         if self.on_disruption is not None:
             self.on_disruption(name, is_active)
 
+    # Resizes and reposition the bottom bar, then arrange its buttons.
     def resize(
         self,
         surface_size: tuple[int, int],
@@ -246,7 +252,8 @@ class RightMenuBar(FloatingMenuBar):
             self.scroll_offset = min(self.scroll_offset, self._max_scroll_offset)
 
     def clear(self) -> None:
-        # remove every journal entry and reset scrolling (used by simulation reset)
+        # Clears the journal entries and reset the scrolling position.
+        # Removes every journal entry and reset scrolling (used by simulation reset)
         self.entries.clear()
         self._entry_cache.clear()
         self.scroll_offset = 0

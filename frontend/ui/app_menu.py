@@ -11,7 +11,7 @@ from frontend.ui.button import Button
 
 class MenuPanel:
     # titled panel with vertically stacked buttons
-
+    # Sets up the panel title, fonts, colors, and buttons
     def __init__(
         self,
         title: str,
@@ -38,6 +38,7 @@ class MenuPanel:
             for label, callback in actions
         ]
 
+    # Draws the panel in the center of the screen with its title and buttons
     def draw(self, surface: pygame.Surface) -> None:
         width = min(460, surface.get_width() - 32)
         button_height = 48
@@ -83,6 +84,7 @@ class MenuPanel:
             button.draw(surface)
             y += button_height + button_gap
 
+    # Checks if any of the buttons were clicked or interacted with
     def handle_event(self, event: pygame.event.Event) -> None:
         for button in self.buttons:
             button.handle_event(event)

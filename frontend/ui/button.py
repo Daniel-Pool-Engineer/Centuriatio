@@ -12,7 +12,7 @@ Color = tuple[int, int, int]
 
 class Button:
     """a rounded button that runs a callback when clicked"""
-
+    """Sets up the button's text, colors, font, and starting state."""
     def __init__(
         self,
         label: str,

@@ -127,15 +127,18 @@ class VillageMapRenderer:
                 self.building_icons[icon_name] = pygame.image.load(path).convert_alpha()
 
     def set_camera(self, x: float, y: float) -> None:
+        # Updates the camera position on the map.
         self.camera_x = x
         self.camera_y = y
 
     def set_zoom(self, zoom: float) -> None:
+        # Changes how zoomed in or out the map is.
         if zoom <= 0:
             raise ValueError("zoom must be positive")
         self.zoom = zoom
 
     def world_to_screen(self, point: tuple[int, int]) -> tuple[int, int]:
+        # Converts a world position into a screen position.
         x, y = point
         return (
             round((x - self.camera_x) * self.zoom),
@@ -143,6 +146,7 @@ class VillageMapRenderer:
         )
 
     def _rect_to_screen(self, bounds: tuple[int, int, int, int]) -> pygame.Rect:
+        # Converts a map rectangle into a rectangle on the screen
         x, y, width, height = bounds
         screen_x, screen_y = self.world_to_screen((x, y))
         return pygame.Rect(
@@ -283,6 +287,7 @@ class VillageMapRenderer:
                 start += step
 
     def _draw_road_lines(
+        # Draws dashed yellow lines along the roads.
         self,
         surface: pygame.Surface,
         bounds: tuple[int, int, int, int],
@@ -335,6 +340,7 @@ class VillageMapRenderer:
                 merged_blocked.append((block_start, block_end))
 
         def draw_segment(segment_start: int, segment_end: int) -> None:
+            # Draws one visible section of the road line
             if segment_start >= segment_end:
                 return
             start_point = (segment_start, center) if horizontal else (center, segment_start)
@@ -519,6 +525,7 @@ class VillageMapRenderer:
             surface.blit(label, label_rect)
 
     def _draw_windows(self, surface: pygame.Surface, bounds: pygame.Rect) -> None:
+        # Draws windows across the building.
         window_width = max(4, round(10 * self.zoom))
         window_height = max(4, round(8 * self.zoom))
 
@@ -542,6 +549,7 @@ class VillageMapRenderer:
             y += spacing_y
 
     def _draw_grid(self, surface: pygame.Surface, village_map: VillageMap) -> None:
+        # Draws the map grid when it is enabled.
         width, height = village_map.world_size
         cell_size = village_map.grid.cell_size
 

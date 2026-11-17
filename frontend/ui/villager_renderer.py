@@ -9,6 +9,7 @@ from frontend.village.renderer import VillageMapRenderer
 class VillagerRenderer:
     """draws villagers and the fire truck onto the screen"""
 
+    # Sets up the font and cache for villager name labels
     def __init__(self) -> None:
         self.font = pygame.font.Font(None, 16)
         self._label_cache: dict[str, pygame.Surface] = {}
