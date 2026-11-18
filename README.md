@@ -112,6 +112,7 @@ cd Centuriatio
 2. Set Up a Virtual Environment
 ```bash
 python -m venv .venv
+.venv\Scripts\activate
 ```
 3. Install Dependencies
 ```bash
