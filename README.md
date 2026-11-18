@@ -21,7 +21,41 @@ ___
 *   **Turn-by-Turn Dialogue:** Agents autonomously initiate and conduct conversations when idle in the same building.
 *   **Crisis Injection (X-Factor):** A manual trigger to simulate a village-wide power outage, forcing agents to adapt their routines (e.g., checking supplies, protecting medication).
 *   **Automated Exit Interviews:** Upon clicking "Finish," the system generates emotional reflections and actionable lessons for every Generative Agent, exporting the entire simulation state to a structured JSON file for analysis.
+*   **Day/Night Cycle:** The village transitions between daytime and nighttime, changing the environment and villagers' routines.
+*   **Interactive Visual Environment:** A detailed village map featuring custom building designs, building icons, road markings, green grass, trees, streetlights, and benches.
+*   **Crisis-Dependent Visuals:** Visual indicators, including exclamation marks during power outages, communicate important events happening throughout the simulation.
+*   **Environmental Audio:** Daytime and nighttime background ambience, along with sound effects for power outages and power restoration.
+*   **Customizable Settings:** Users can toggle the grid and building labels and adjust audio between High, Low, and Off.
 ---
+
+## Visual Design & Environment
+
+Centuriatio features a custom Pygame-rendered village environment designed to make the simulation more visually engaging and easier to understand.
+
+*   **Village Environment:** Updated green grass, road markings, and map details create a more developed village setting.
+*   **Custom Building Designs:** Buildings feature distinct colors, outlines, signs, and visual details to help identify their purpose.
+*   **Building Icons:** Custom icons represent different building types throughout the village.
+*   **Environmental Decorations:** Trees, streetlights, benches, and other decorative objects add detail to the environment.
+*   **Crisis Indicators:** Visual alerts, including exclamation marks during power outages, communicate important events.
+*   **Day/Night Appearance:** The environment changes throughout the simulation to reflect the current day/night cycle.
+
+## Audio System
+
+Centuriatio includes an environmental audio system that responds to the current state of the simulation.
+
+*   **Daytime Ambience:** Background environmental audio that plays during the daytime.
+*   **Nighttime Ambience:** Separate background ambience that plays during nighttime.
+*   **Power Outage Sound:** A sound effect that plays when a power outage begins.
+*   **Power Restoration Sound:** A sound effect that plays when electricity is restored.
+
+Users can control audio through the Settings menu:
+
+*   **High:** Normal audio volume.
+*   **Low:** Reduced audio volume.
+*   **Off:** Stops all background ambience and sound effects.
+
+The system automatically switches between daytime and nighttime ambience as the simulation progresses. Audio playback also stops when the user finishes the simulation.
+
 ## Architecture & Adaptations
 
 The Stanford paper *"Generative Agents: Interactive Simulacra of Human Behavior"* defines generative agents as computational software agents that simulate believable human behavior. This is achieved through an architecture that **stores**, **synthesizes**, and **applies** relevant memories to generate behavior using a large language model.
@@ -95,11 +129,17 @@ python -m frontend.ui.window
 ```
 ### The Demo Flow:
 
+### The Demo Flow:
+
 1.  **Start:** Click **"Start Simulation"** from the main menu.
-2.  **Observe:** Watch the villagers move around the map. If two Generative Agents are idle in the same building, they will strike up a conversation. The "Event Timeline" on the right will log their actions.
-3.  **Inject Crisis:** Click **"Power Outage"** in the bottom menu. The screen will dim, and agents will begin adapting their behavior (e.g., checking supplies, protecting medication). Scripted NPCs will evacuate to their homes.
-4.  **Finish & Export:** Click **"Finish"**. A progress screen will appear as the system generates exit interviews for all Generative Agents.
-5.  **Analyze:** The simulation automatically saves and opens a `simulation_TIMESTAMP.json` file in the `exports/` folder. This file contains the full timeline of encounters, daily summaries, final reflections, and lessons learned for every AI agent (Scripted NPCs are omitted from the JSON).
+2.  **Explore:** Watch villagers move around the map and observe the updated village visuals, including custom buildings, icons, roads, trees, streetlights, and benches.
+3.  **Observe:** If two Generative Agents are idle in the same building, they will strike up a conversation. The "Event Timeline" on the right will log their actions.
+4.  **Day/Night Cycle:** Let the simulation progress to see the environment change and hear the corresponding daytime or nighttime ambience.
+5.  **Inject Crisis:** Click **"Power Outage"** in the bottom menu. The screen will dim, crisis indicators will appear, and agents will begin adapting their behavior. A power outage sound effect will also play.
+6.  **Recovery:** Allow the recovery process to take place. When power is restored, the restoration sound effect will play.
+7.  **Settings:** You can open the Settings menu to toggle the grid and building labels or cycle through High, Low, and Off audio settings.
+8.  **Finish & Export:** Click **"Finish"**. Audio playback stops, and a progress screen appears as the system generates exit interviews for all Generative Agents.
+9.  **Analyze:** The simulation saves and opens a `simulation_TIMESTAMP.json` file in the `exports/` folder. This file contains encounters, daily summaries, final reflections, and lessons learned for every AI agent.
 
 ---
 
