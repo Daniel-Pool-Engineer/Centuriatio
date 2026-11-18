@@ -101,8 +101,12 @@ Smallville evaluated agents via manual human observation and qualitative intervi
 Generate API Key via Navigator
 
 [Link to Navigator](https://navigator.ai.ufl.edu/ai-services/navigator-ai-toolkit/)
-### 1. Requirements
+### 1. Clone Repository and Installing Requirements
+Open your terminal and run:
+
 ```bash
+git clone https://github.com/Daniel-Pool-Engineer/Centuriatio.git
+cd Centuriatio
 pip install -r requirements.txt
 ```
 ### 2. Environment Variables
