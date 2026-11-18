@@ -104,11 +104,20 @@ Generate API Key via Navigator
 ### 1. Clone Repository and Installing Requirements
 Open your terminal and run:
 
+1. Clone Repository
 ```bash
 git clone https://github.com/Daniel-Pool-Engineer/Centuriatio.git
 cd Centuriatio
+```
+2. Set Up a Virtual Environment
+```bash
+python -m venv .venv
+```
+3. Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
+
 ### 2. Environment Variables
 
 Create a `.env` file in the root directory and add your LLM API credentials:
