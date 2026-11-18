@@ -128,9 +128,6 @@ Start the simulation from the root directory:
 python -m frontend.ui.window
 ```
 ### The Demo Flow:
-
-### The Demo Flow:
-
 1.  **Start:** Click **"Start Simulation"** from the main menu.
 2.  **Explore:** Watch villagers move around the map and observe the updated village visuals, including custom buildings, icons, roads, trees, streetlights, and benches.
 3.  **Observe:** If two Generative Agents are idle in the same building, they will strike up a conversation. The "Event Timeline" on the right will log their actions.
@@ -144,7 +141,6 @@ python -m frontend.ui.window
 ---
 
 ## Project Structure
-
 *   `backend/agent/`: Contains the LLM prompts, agent logic, role profiles, and day/night clock.
 *   `backend/map/`: Pathfinding graphs, vehicle routing, and the static map data.
 *   `backend/simulation_state.py`: Core dataclasses (Villager, FireTruck, MemoryEntry).
@@ -154,7 +150,6 @@ python -m frontend.ui.window
 *   `exports/`: Output folder for generated JSON reports.
 
 ---
-
 ## Literature Reference
 
 > Park, J. S., O'Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023). Generative Agents: Interactive Simulacra of Human Behavior. *Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology*. https://doi.org/10.1145/3586183.3606763
