@@ -14,45 +14,45 @@ While traditional urban simulations focus on the physics of infrastructure (e.g.
 ___
 ## Key Features
 
-*   **Generative Agents:** The core AI villagers make autonomous decisions based on their environment, current crisis state, and a personal memory stream.
-*   **Dual-Layer Memory System:** 
-    *   *Episodic Memory:* Stores raw conversation transcripts and action histories for agents.
-    *   *Semantic Memory:* Compresses daily events into nightly 3-sentence summaries.
-*   **Turn-by-Turn Dialogue:** Agents autonomously initiate and conduct conversations when idle in the same building.
-*   **Crisis Injection (X-Factor):** A manual trigger to simulate a village-wide power outage, forcing agents to adapt their routines (e.g., checking supplies, protecting medication).
-*   **Automated Exit Interviews:** Upon clicking "Finish," the system generates emotional reflections and actionable lessons for every Generative Agent, exporting the entire simulation state to a structured JSON file for analysis.
-*   **Day/Night Cycle:** The village transitions between daytime and nighttime, changing the environment and villagers' routines.
-*   **Interactive Visual Environment:** A detailed village map featuring custom building designs, building icons, road markings, green grass, trees, streetlights, and benches.
-*   **Crisis-Dependent Visuals:** Visual indicators, including exclamation marks during power outages, communicate important events happening throughout the simulation.
-*   **Environmental Audio:** Daytime and nighttime background ambience, along with sound effects for power outages and power restoration.
-*   **Customizable Settings:** Users can toggle the grid and building labels and adjust audio between High, Low, and Off.
+*    **Generative Agents:** The core AI villagers make autonomous decisions based on their environment, current crisis state, and a personal memory stream.
+*    **Dual-Layer Memory System:** 
+    *    *Episodic Memory:* Stores raw conversation transcripts and action histories for agents.
+    *    *Semantic Memory:* Compresses daily events into nightly 3-sentence summaries.
+*    **Turn-by-Turn Dialogue:** Agents autonomously initiate and conduct conversations when idle in the same building.
+*    **Crisis Injection (X-Factor):** A manual trigger to simulate a village-wide power outage, forcing agents to adapt their routines (e.g., checking supplies, protecting medication).
+*    **Automated Exit Interviews:** Upon clicking "Finish," the system generates emotional reflections and actionable lessons for every Generative Agent, exporting the entire simulation state to a structured JSON file for analysis.
+*    **Day/Night Cycle:** The village transitions between daytime and nighttime, changing the environment and villagers' routines.
+*    **Interactive Visual Environment:** A detailed village map featuring custom building designs, building icons, road markings, green grass, trees, streetlights, and benches.
+*    **Crisis-Dependent Visuals:** Visual indicators, including exclamation marks during power outages, communicate important events happening throughout the simulation.
+*    **Environmental Audio:** Daytime and nighttime background ambience, along with sound effects for power outages and power restoration.
+*    **Customizable Settings:** Users can toggle the grid and building labels and adjust audio between High, Low, and Off.
 ---
 
 ## Visual Design & Environment
 
 Centuriatio features a custom Pygame-rendered village environment designed to make the simulation more visually engaging and easier to understand.
 
-*   **Village Environment:** Green grass, road markings, and map details create a more developed village setting.
-*   **Custom Building Designs:** Buildings feature distinct colors, outlines, signs, and visual details to help identify their purpose.
-*   **Building Icons:** Custom icons represent different building types throughout the village.
-*   **Environmental Decorations:** Trees, streetlights, benches, and other decorative objects add detail to the environment.
-*   **Crisis Indicators:** Visual alerts, including exclamation marks during power outages, communicate important events.
-*   **Day/Night Appearance:** The environment changes throughout the simulation to reflect the current day/night cycle.
+*    **Village Environment:** Green grass, road markings, and map details create a more developed village setting.
+*    **Custom Building Designs:** Buildings feature distinct colors, outlines, signs, and visual details to help identify their purpose.
+*    **Building Icons:** Custom icons represent different building types throughout the village.
+*    **Environmental Decorations:** Trees, streetlights, benches, and other decorative objects add detail to the environment.
+*    **Crisis Indicators:** Visual alerts, including exclamation marks during power outages, communicate important events.
+*    **Day/Night Appearance:** The environment changes throughout the simulation to reflect the current day/night cycle.
 
 ## Audio System
 
 Centuriatio includes an environmental audio system that responds to the current state of the simulation.
 
-*   **Daytime Ambience:** Background environmental audio that plays during the daytime.
-*   **Nighttime Ambience:** Separate background ambience that plays during nighttime.
-*   **Power Outage Sound:** A sound effect that plays when a power outage begins.
-*   **Power Restoration Sound:** A sound effect that plays when electricity is restored.
+*    **Daytime Ambience:** Background environmental audio that plays during the daytime.
+*    **Nighttime Ambience:** Separate background ambience that plays during nighttime.
+*    **Power Outage Sound:** A sound effect that plays when a power outage begins.
+*    **Power Restoration Sound:** A sound effect that plays when electricity is restored.
 
 Users can control audio through the Settings menu:
 
-*   **High:** Normal audio volume.
-*   **Low:** Reduced audio volume.
-*   **Off:** Stops all background ambience and sound effects.
+*    **High:** Normal audio volume.
+*    **Low:** Reduced audio volume.
+*    **Off:** Stops all background ambience and sound effects.
 
 The system automatically switches between daytime and nighttime ambience as the simulation progresses. Audio playback also stops when the user finishes the simulation.
 
@@ -69,8 +69,8 @@ Smallville uses a single, comprehensive memory stream. Every observation is adde
 
 **Centuriatio's Adaptation (Two-Tier System):**
 We separated memory into two distinct tiers to prevent context bloat and to structure the data for export:
-*   **Stores (Episodic Memory):** We maintain a record of raw conversation transcripts and an explicit `task_history` for every agent.
-*   **Synthesizes (Semantic Memory):** At nightfall, the system compresses the day's raw events into a 3-sentence "Daily Summary." At the end of the simulation, it synthesizes the entire experience into an emotional reflection and actionable lessons.
+*    **Stores (Episodic Memory):** We maintain a record of raw conversation transcripts and an explicit `task_history` for every agent.
+*    **Synthesizes (Semantic Memory):** At nightfall, the system compresses the day's raw events into a 3-sentence "Daily Summary." At the end of the simulation, it synthesizes the entire experience into an emotional reflection and actionable lessons.
 
 ### 2. Memory Retrieval (Applies)
 
@@ -81,11 +81,11 @@ Smallville normalizes all three variables using **Min-Max Scaling** to force the
 
 **Centuriatio's Adaptation:**
 We adapted the retrieval formula while preserving the equal weighting (`α = 1.0`), but replaced the heavy mathematical components with lightweight heuristics:
-*   **Min-Max Scaling (Removed):** Our formulas natively output values between `0.0` and `1.0`, making the normalization step mathematically redundant.
-*   **Recency:** We replaced Smallville's real-time exponential decay with a fractional decay based on simulation days (Today = 1.0, Yesterday = 0.5, Two days ago = 0.33).
-*   **Importance:** We replicated Smallville's approach; a background LLM call rates the criticality of an event from 1 to 10, which is mathematically normalized by dividing by 10.
-*   **Relevance (Keyword Match):** We substituted cosine similarity with **Jaccard Similarity** and **NLTK WordNet Lemmatization**. Memories are scored by their lexical overlap with the current crisis context (e.g., matching lemmatized roots like "power", "outage", "hospital"). This avoids the overhead of vector embeddings while solving the synonym problem.
-*   **Dynamic Selection:** Unlike a fixed Top-K retrieval, which always returns K memories, the system injects up to 5 memories that score `>= 1.0`. This prevents prompt dilution by ensuring the LLM only reads high-signal memories, even if it means reading fewer than 5.
+*    **Min-Max Scaling (Removed):** Our formulas natively output values between `0.0` and `1.0`, making the normalization step mathematically redundant.
+*    **Recency:** We replaced Smallville's real-time exponential decay with a fractional decay based on simulation days (Today = 1.0, Yesterday = 0.5, Two days ago = 0.33).
+*    **Importance:** We replicated Smallville's approach; a background LLM call rates the criticality of an event from 1 to 10, which is mathematically normalized by dividing by 10.
+*    **Relevance (Keyword Match):** We substituted cosine similarity with **Jaccard Similarity** and **NLTK WordNet Lemmatization**. Memories are scored by their lexical overlap with the current crisis context (e.g., matching lemmatized roots like "power", "outage", "hospital"). This avoids the overhead of vector embeddings while solving the synonym problem.
+*    **Dynamic Selection:** Unlike a fixed Top-K retrieval, which always returns K memories, the system injects up to 5 memories that score `>= 1.0`. This prevents prompt dilution by ensuring the LLM only reads high-signal memories, even if it means reading fewer than 5.
 
 ### 3. System Architecture & Output
 
@@ -100,7 +100,7 @@ Smallville evaluated agents via manual human observation and qualitative intervi
 ### 0. Navigator API Key
 Generate API Key via Navigator
 
-[Link to Navigator](https://navigator.ai.ufl.edu/ai-services/navigator-ai-toolkit/)
+ - [Link to Navigator](https://navigator.ai.ufl.edu/ai-services/navigator-ai-toolkit/)
 ### 1. Clone Repository and Installing Requirements
 Open your terminal and run:
 
@@ -155,13 +155,15 @@ python -m frontend.ui.window
 ---
 
 ## Project Structure
-*   `backend/agent/`: Contains the LLM prompts, agent logic, role profiles, and day/night clock.
-*   `backend/map/`: Pathfinding graphs, vehicle routing, and the static map data.
-*   `backend/simulation_state.py`: Core dataclasses (Villager, FireTruck, MemoryEntry).
-*   `backend/simulation_manager.py`: Coordinates movement, physics, scripted NPC behavior, and memory retrieval.
-*   `backend/social_system.py`: Manages background LLM conversations and JSON exports.
-*   `frontend/ui/`: Pygame rendering, menus, and the main application loop.
-*   `exports/`: Output folder for generated JSON reports.
+*    `backend/agent/`: Contains the LLM prompts, agent logic, role profiles, and day/night clock.
+*    `backend/map/`: Pathfinding graphs, vehicle routing, and the static map data.
+*    `backend/simulation_state.py`: Core dataclasses (Villager, FireTruck, MemoryEntry).
+*    `backend/simulation_manager.py`: Coordinates movement, physics, scripted NPC behavior, and memory retrieval.
+*    `backend/social_system.py`: Manages background LLM conversations and JSON exports.
+*    `frontend/ui/`: Pygame rendering, menus, and the main application loop.
+*    `frontend/village/`: Logics for the village.
+*    `frontend/assets/`: Holds sprite and audio.
+*    `exports/`: Output folder for generated JSON reports.
 
 ---
 ## Literature Reference
