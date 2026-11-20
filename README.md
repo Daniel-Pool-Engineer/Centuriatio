@@ -32,7 +32,7 @@ ___
 
 Centuriatio features a custom Pygame-rendered village environment designed to make the simulation more visually engaging and easier to understand.
 
-*   **Village Environment:** Updated green grass, road markings, and map details create a more developed village setting.
+*   **Village Environment:** Green grass, road markings, and map details create a more developed village setting.
 *   **Custom Building Designs:** Buildings feature distinct colors, outlines, signs, and visual details to help identify their purpose.
 *   **Building Icons:** Custom icons represent different building types throughout the village.
 *   **Environmental Decorations:** Trees, streetlights, benches, and other decorative objects add detail to the environment.
